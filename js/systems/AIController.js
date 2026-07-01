@@ -47,6 +47,7 @@ export class AIController {
         this.state = 'assist';
         const direction = companionInCombat.position.clone().subtract(this.entity.position).normalize();
         this.entity.velocity = direction.multiply(this.entity.baseSpeed * 0.8);
+        this.entity.setAnimation('walk');
         return;
       }
     }
@@ -137,6 +138,7 @@ export class AIController {
       // No valid target, don't attack
       this.entity.velocity.x = 0;
       this.entity.velocity.y = 0;
+      this.entity.setAnimation('idle');
       return;
     }
 
@@ -165,6 +167,7 @@ export class AIController {
       if (Math.abs(dy) > aimTolerance) {
         const yDirection = dy > 0 ? 1 : -1;
         this.entity.velocity.y = yDirection * this.entity.baseSpeed * 1.2; // Fast vertical adjustment
+        this.entity.setAnimation('walk');
       }
 
       // PRIORITY 2: Adjust X distance (only if aim is good or very close)
@@ -172,10 +175,19 @@ export class AIController {
         if (dx > optimalXDistance) {
           // Too far, move right toward target
           this.entity.velocity.x = this.entity.baseSpeed * 0.6;
+          this.entity.setAnimation('walk');
+          this.entity.flipX = false;
         } else if (dx < 50) {
           // Too close, back away left
           this.entity.velocity.x = -this.entity.baseSpeed * 0.5;
+          this.entity.setAnimation('walk');
+          this.entity.flipX = true;
         }
+      }
+
+      // If not moving, set idle
+      if (this.entity.velocity.x === 0 && this.entity.velocity.y === 0 && !this.entity.isAttacking) {
+        this.entity.setAnimation('idle');
       }
     }
   }
@@ -195,6 +207,11 @@ export class AIController {
       this.state = 'engage';
       const direction = targetEnemy.position.clone().subtract(this.entity.position).normalize();
       this.entity.velocity = direction.multiply(this.entity.baseSpeed);
+      this.entity.setAnimation('walk');
+
+      // Flip sprite based on direction
+      if (direction.x < 0) this.entity.flipX = true;
+      if (direction.x > 0) this.entity.flipX = false;
     } else {
       this.moveToZonePosition();
     }
@@ -224,11 +241,19 @@ export class AIController {
     if (distance < 20) {
       this.entity.velocity.x = 0;
       this.entity.velocity.y = 0;
+      if (!this.entity.isAttacking) {
+        this.entity.setAnimation('idle');
+      }
     } else {
       const dirX = dx / distance;
       const dirY = dy / distance;
       this.entity.velocity.x = dirX * this.entity.baseSpeed * 0.5;
       this.entity.velocity.y = dirY * this.entity.baseSpeed * 0.5;
+      this.entity.setAnimation('walk');
+
+      // Flip sprite based on direction
+      if (dirX < 0) this.entity.flipX = true;
+      if (dirX > 0) this.entity.flipX = false;
     }
   }
 
