@@ -39,6 +39,10 @@ export class Renderer {
   }
 
   static renderUI(ctx, player, score, combo, images) {
+    // Dark background box for left UI
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.fillRect(10, 10, 180, combo > 0 ? 155 : 95);
+
     // Score
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 18px monospace';
@@ -61,7 +65,11 @@ export class Renderer {
       this.renderComboMeter(ctx, combo, 20, 140);
     }
 
-    // Character name
+    // Character name with background box
+    const nameWidth = ctx.measureText(player.name.toUpperCase()).width;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.fillRect(780 - nameWidth - 10, 10, nameWidth + 20, 30);
+
     ctx.textAlign = 'right';
     ctx.fillStyle = player.color;
     ctx.font = 'bold 20px monospace';
