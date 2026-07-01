@@ -19,10 +19,55 @@ export class FinalBoss extends Entity {
 
     this.damage = 0; // Doesn't attack
     this.breathing = 0; // For idle animation
+
+    // Enable sprite rendering
+    this.spriteKey = 'gwima';
+    this.useSprites = true;
+    this.currentAnimation = 'idle';
+    this.animationFrame = 0;
+    this.animationTimer = 0;
+    this.animationSpeed = 100;
+    this.frameCount = { idle: 6, hit: 3, death: 12 };
+  }
+
+
+  update(dt) {
+    // Update animation
+    this.animationTimer += dt;
+    const currentFrameCount = this.frameCount[this.currentAnimation] || 1;
+    if (this.animationTimer >= this.animationSpeed) {
+      this.animationFrame = (this.animationFrame + 1) % currentFrameCount;
+      this.animationTimer = 0;
+    }
+
+    // Update position
+    this.position.x += this.velocity.x * dt / 1000;
+    this.position.y += this.velocity.y * dt / 1000;
+
+    // Idle breathing animation
+    this.breathing += dt;
+  }
+
+  setAnimation(animName) {
+    if (this.currentAnimation !== animName) {
+      this.currentAnimation = animName;
+      this.animationFrame = 0;
+      this.animationTimer = 0;
+    }
   }
 
   takeDamage(amount) {
     this.health -= amount;
+    this.setAnimation('hit');
+
+    // Return to idle after hit animation
+    setTimeout(() => {
+      if (this.health > 0) {
+        this.setAnimation('idle');
+      } else {
+        this.setAnimation('death');
+      }
+    }, 300);
 
     if (this.health <= 0) {
       this.health = 0;
@@ -30,15 +75,20 @@ export class FinalBoss extends Entity {
     }
   }
 
-  update(dt) {
-    super.update(dt);
-
-    // Idle breathing animation
-    this.breathing += dt;
-  }
-
-  render(ctx) {
+  render(ctx, images) {
     if (!this.active) return;
+
+    // Try to render sprite if available
+    if (this.useSprites && images && this.spriteKey) {
+      const spriteKey = `${this.spriteKey}_${this.currentAnimation}`;
+      const sprite = images[spriteKey];
+
+      if (sprite && sprite.complete) {
+        this.renderSprite(ctx, sprite);
+        this.renderHealthBar(ctx);
+        return;
+      }
+    }
 
     // Breathing effect (slight scale)
     const breathScale = 1 + Math.sin(this.breathing * 0.002) * 0.02;
@@ -114,6 +164,20 @@ export class FinalBoss extends Entity {
 
     // Draw massive health bar at top of screen
     this.renderHealthBar(ctx);
+  }
+
+  renderSprite(ctx, sprite) {
+    const frameWidth = sprite.width / (this.frameCount[this.currentAnimation] || 1);
+    const frameHeight = sprite.height;
+    const frameX = this.animationFrame * frameWidth;
+
+    ctx.save();
+    ctx.drawImage(
+      sprite,
+      frameX, 0, frameWidth, frameHeight,
+      this.position.x, this.position.y, this.size.x, this.size.y
+    );
+    ctx.restore();
   }
 
   renderHealthBar(ctx) {

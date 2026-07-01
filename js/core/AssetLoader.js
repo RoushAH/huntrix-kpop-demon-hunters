@@ -154,12 +154,55 @@ export class AssetLoader {
     ];
   }
 
+  static getUIAssets() {
+    return [
+      { key: 'button_easy', path: 'assets/sprites/ui/button_easy.png' },
+      { key: 'button_hard', path: 'assets/sprites/ui/button_hard.png' },
+      { key: 'button_start', path: 'assets/sprites/ui/button_start.png' },
+      { key: 'heart_full', path: 'assets/sprites/ui/heart_full.png' },
+      { key: 'heart_empty', path: 'assets/sprites/ui/heart_empty.png' },
+      { key: 'insert_coin', path: 'assets/sprites/ui/insert_coin.png' },
+      { key: 'press_start', path: 'assets/sprites/ui/press_start.png' },
+      { key: 'logo', path: 'assets/sprites/ui/logo.png' },
+      { key: 'demon_icon_rumi', path: 'assets/sprites/ui/demon_icon_rumi.png' },
+      { key: 'demon_icon_mira', path: 'assets/sprites/ui/demon_icon_mira.png' },
+      { key: 'demon_icon_zoey', path: 'assets/sprites/ui/demon_icon_zoey.png' },
+      { key: 'stat_heart', path: 'assets/sprites/ui/stat_heart.png' },
+    ];
+  }
+
+  static getBackgroundAssets() {
+    return [
+      // Level 1: Seoul Cityscape Night
+      { key: 'bg_level1_layer1', path: 'assets/backgrounds/level1/bg_level1_layer1.png' },
+      { key: 'bg_level1_layer2', path: 'assets/backgrounds/level1/bg_level1_layer2.png' },
+      { key: 'bg_level1_layer3', path: 'assets/backgrounds/level1/bg_level1_layer3.png' },
+
+      // Level 2: Neon District
+      { key: 'bg_level2_layer1', path: 'assets/backgrounds/level2/bg_level2_layer1.png' },
+      { key: 'bg_level2_layer2', path: 'assets/backgrounds/level2/bg_level2_layer2.png' },
+      { key: 'bg_level2_layer3', path: 'assets/backgrounds/level2/bg_level2_layer3.png' },
+
+      // Level 3: Demonic Realm
+      { key: 'bg_level3_layer1', path: 'assets/backgrounds/level3/bg_level3_layer1.png' },
+      { key: 'bg_level3_layer2', path: 'assets/backgrounds/level3/bg_level3_layer2.png' },
+      { key: 'bg_level3_layer3', path: 'assets/backgrounds/level3/bg_level3_layer3.png' },
+
+      // Boss Arena
+      { key: 'bg_boss_layer1', path: 'assets/backgrounds/boss/bg_boss_layer1.png' },
+      { key: 'bg_boss_layer2', path: 'assets/backgrounds/boss/bg_boss_layer2.png' },
+      { key: 'bg_boss_layer3', path: 'assets/backgrounds/boss/bg_boss_layer3.png' },
+    ];
+  }
+
   static getAllAssets() {
     return [
       ...AssetLoader.getCharacterAssets(),
       ...AssetLoader.getEnemyAssets(),
       ...AssetLoader.getEffectAssets(),
-      ...AssetLoader.getTutorialAssets()
+      ...AssetLoader.getTutorialAssets(),
+      ...AssetLoader.getUIAssets(),
+      ...AssetLoader.getBackgroundAssets()
     ];
   }
 }

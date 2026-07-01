@@ -80,7 +80,8 @@ export class SajaBoy extends Entity {
     // For sprite rendering (artIndex set by BossState, 1-5)
     this.artIndex = 0; // Will be set to 1-5 by BossState
     this.spriteKey = null; // Will be set based on artIndex
-    this.useSprites = false; // Enable when sprites available
+    this.useSprites = true; // Sprites are now available
+    this.frameCount = { idle: 6, attack: 5, hit: 3, death: 8 };
   }
 
   shouldDropHealthPill() {
@@ -206,12 +207,11 @@ export class SajaBoy extends Entity {
 
     // Try to render sprite if available
     if (images && this.artIndex > 0) {
-      const spriteKey = `saja_boy_${this.artIndex}_idle`;
+      const spriteKey = `saja_boy_${this.artIndex}_${this.currentAnimation}`;
       const sprite = images[spriteKey];
 
       if (sprite && sprite.complete) {
-        // For now just render idle, will add animations later
-        ctx.drawImage(sprite, this.position.x, this.position.y, this.size.x, this.size.y);
+        this.renderSprite(ctx, sprite);
         this.renderHealthBar(ctx);
         this.renderTypeLabel(ctx);
         this.renderEffects(ctx);
@@ -231,6 +231,33 @@ export class SajaBoy extends Entity {
     this.renderHealthBar(ctx);
     this.renderTypeLabel(ctx);
     this.renderEffects(ctx);
+  }
+
+  renderSprite(ctx, sprite) {
+    const frameWidth = sprite.width / (this.frameCount[this.currentAnimation] || 1);
+    const frameHeight = sprite.height;
+    const frameX = this.animationFrame * frameWidth;
+
+    ctx.save();
+
+    // Flip horizontally if needed
+    if (this.flipX) {
+      ctx.translate(this.position.x + this.size.x, this.position.y);
+      ctx.scale(-1, 1);
+      ctx.drawImage(
+        sprite,
+        frameX, 0, frameWidth, frameHeight,
+        0, 0, this.size.x, this.size.y
+      );
+    } else {
+      ctx.drawImage(
+        sprite,
+        frameX, 0, frameWidth, frameHeight,
+        this.position.x, this.position.y, this.size.x, this.size.y
+      );
+    }
+
+    ctx.restore();
   }
 
   renderHealthBar(ctx) {
