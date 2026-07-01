@@ -82,6 +82,11 @@ export class SajaBoy extends Entity {
     this.spriteKey = null; // Will be set based on artIndex
     this.useSprites = true; // Sprites are now available
     this.frameCount = { idle: 6, attack: 5, hit: 3, death: 8 };
+
+    // Death animation handling
+    this.isDying = false;
+    this.deathAnimationTimer = 0;
+    this.deathAnimationDuration = 800; // 8 frames * 100ms
   }
 
   shouldDropHealthPill() {
@@ -114,8 +119,9 @@ export class SajaBoy extends Entity {
 
     if (this.health <= 0) {
       this.health = 0;
-      this.active = false;
-      console.log(`SajaBoy ${this.boyType}: DEFEATED! Setting active = false`);
+      this.isDying = true;
+      this.setAnimation('death');
+      console.log(`SajaBoy ${this.boyType}: DEFEATED! Playing death animation`);
     }
   }
 
@@ -129,6 +135,16 @@ export class SajaBoy extends Entity {
 
   update(dt, target, turnBasedMode = false) {
     super.update(dt);
+
+    // Handle death animation
+    if (this.isDying) {
+      this.deathAnimationTimer += dt;
+      if (this.deathAnimationTimer >= this.deathAnimationDuration) {
+        this.active = false;
+        console.log(`SajaBoy ${this.boyType}: Death animation complete, deactivating`);
+      }
+      return; // Don't move or attack while dying
+    }
 
     if (!this.active || !target || !target.active) return;
 

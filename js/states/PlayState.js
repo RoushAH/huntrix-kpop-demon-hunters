@@ -8,6 +8,7 @@ import { Player } from '../entities/Player.js';
 import { EnemySpawner } from '../entities/EnemySpawner.js';
 import { Projectile } from '../entities/Projectile.js';
 import { HealthPill } from '../entities/HealthPill.js';
+import { VisualEffect } from '../entities/VisualEffect.js';
 import { WingwomenManager } from '../systems/WingwomenManager.js';
 import { ScoreManager } from '../systems/ScoreManager.js';
 import { CollisionDetector } from '../core/CollisionDetector.js';
@@ -30,6 +31,7 @@ export class PlayState extends BaseState {
     this.enemies = [];
     this.projectiles = [];
     this.healthPills = [];
+    this.visualEffects = [];
     this.enemySpawner = null;
     this.wingwomenManager = null;
     this.scoreManager = new ScoreManager();
@@ -60,6 +62,8 @@ export class PlayState extends BaseState {
     this.enemies = [];
     this.projectiles = [];
     this.healthPills = [];
+    this.visualEffects = [];
+    this.visualEffects = [];
     this.scoreManager.reset();
     this.gameOver = false;
 
@@ -121,6 +125,10 @@ export class PlayState extends BaseState {
     this.enemies = this.enemies.filter(e => e.active);
     this.projectiles = this.projectiles.filter(p => p.active);
     this.healthPills = this.healthPills.filter(p => p.active);
+    this.visualEffects = this.visualEffects.filter(e => e.active);
+
+    // Update visual effects
+    this.visualEffects.forEach(effect => effect.update(dt));
 
     // Update combo timer through ScoreManager
     this.scoreManager.updateCombo(dt);
@@ -176,6 +184,13 @@ export class PlayState extends BaseState {
       // Create projectile if character just attacked and is ranged (Mira)
       if (player.justAttacked) {
         this.game.audioManager.playAttackSound(player.characterType);
+
+        // Create slash effect for melee attacks
+        if (player.characterType !== 'zoey') {
+          const effectX = player.position.x + player.size.x + 20;
+          const effectY = player.position.y + player.size.y / 2;
+          this.visualEffects.push(new VisualEffect(effectX, effectY, 'slash', 200));
+        }
 
         if (player.characterType === 'zoey') { // Zoey throws knives
           const projectile = new Projectile(
@@ -303,6 +318,11 @@ export class PlayState extends BaseState {
 
     this.healthPills.forEach(pill => {
       pill.render(ctx, images);
+    });
+
+    // Render visual effects
+    this.visualEffects.forEach(effect => {
+      effect.render(ctx, images);
     });
 
     Renderer.renderUI(ctx, this.player, this.scoreManager.currentScore, this.scoreManager.currentCombo);

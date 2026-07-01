@@ -31,6 +31,7 @@ export class TutorialState extends BaseState {
   render(ctx) {
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
+    const images = this.game.images;
 
     // Background
     ctx.fillStyle = '#1a0033';
@@ -46,9 +47,9 @@ export class TutorialState extends BaseState {
     const inputMode = this.game.inputManager.getInputMode();
 
     if (inputMode === 'keyboard' || !inputMode) {
-      this.renderKeyboardInstructions(ctx, centerX, centerY);
+      this.renderKeyboardInstructions(ctx, centerX, centerY, images);
     } else {
-      this.renderTouchInstructions(ctx, centerX, centerY);
+      this.renderTouchInstructions(ctx, centerX, centerY, images);
     }
 
     // Skip prompt (blink)
@@ -60,7 +61,7 @@ export class TutorialState extends BaseState {
     }
   }
 
-  renderKeyboardInstructions(ctx, centerX, centerY) {
+  renderKeyboardInstructions(ctx, centerX, centerY, images) {
     const leftCol = centerX - 200;
     const rightCol = centerX + 200;
     const topRow = centerY - 40;
@@ -72,8 +73,13 @@ export class TutorialState extends BaseState {
     ctx.textAlign = 'center';
     ctx.fillText('MOVE', leftCol, topRow - 60);
 
-    // Arrow keys diagram
-    this.drawArrowKeys(ctx, leftCol, topRow);
+    // Arrow keys diagram - use sprite if available
+    const arrowKeys = images['tutorial_arrow_keys'];
+    if (arrowKeys && arrowKeys.complete) {
+      ctx.drawImage(arrowKeys, leftCol - 32, topRow - 32, 64, 64);
+    } else {
+      this.drawArrowKeys(ctx, leftCol, topRow);
+    }
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
@@ -84,8 +90,13 @@ export class TutorialState extends BaseState {
     ctx.font = 'bold 24px monospace';
     ctx.fillText('ATTACK', rightCol, topRow - 60);
 
-    // Space key
-    this.drawSpaceKey(ctx, rightCol, topRow);
+    // Space key - use sprite if available
+    const spaceKey = images['tutorial_space_key'];
+    if (spaceKey && spaceKey.complete) {
+      ctx.drawImage(spaceKey, rightCol - 32, topRow - 32, 64, 64);
+    } else {
+      this.drawSpaceKey(ctx, rightCol, topRow);
+    }
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
@@ -96,8 +107,13 @@ export class TutorialState extends BaseState {
     ctx.font = 'bold 20px monospace';
     ctx.fillText('DEFEAT ALL DEMONS!', centerX, bottomRow + 40);
 
-    // Enemy icon
-    this.drawEnemyIcon(ctx, centerX, bottomRow + 80);
+    // Enemy icon - use sprite if available
+    const enemyIcon = images['tutorial_enemy_icon'];
+    if (enemyIcon && enemyIcon.complete) {
+      ctx.drawImage(enemyIcon, centerX - 16, bottomRow + 64, 32, 32);
+    } else {
+      this.drawEnemyIcon(ctx, centerX, bottomRow + 80);
+    }
   }
 
   renderTouchInstructions(ctx, centerX, centerY) {
