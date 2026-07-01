@@ -17,6 +17,8 @@ export class AudioManager {
     };
 
     this.audioElement = null; // HTML5 Audio element for music
+    this.midiPlayer = null;
+    this.midiInstrument = null;
     this.midiReady = false;
     this.pendingTrack = null;
 
@@ -43,27 +45,34 @@ export class AudioManager {
       console.warn('AudioManager: Web Audio API not supported', e);
     }
 
-    // Initialize MIDI.js
-    if (typeof MIDI !== 'undefined') {
-      console.log('AudioManager: Initializing MIDI.js...');
-      MIDI.loadPlugin({
-        soundfontUrl: "https://cdn.jsdelivr.net/npm/midi-js-soundfonts@1.0.0/FluidR3_GM/",
-        instrument: "acoustic_grand_piano",
-        onsuccess: () => {
-          console.log('AudioManager: MIDI.js ready');
-          this.midiReady = true;
-          // Play pending track if any
-          if (this.pendingTrack) {
-            this.playMusic(this.pendingTrack);
-            this.pendingTrack = null;
-          }
-        },
-        onerror: (err) => {
-          console.warn('AudioManager: MIDI.js initialization failed', err);
+    // Initialize midi-player-js and soundfont-player
+    if (typeof MidiPlayer !== 'undefined' && typeof Soundfont !== 'undefined') {
+      console.log('AudioManager: Initializing MIDI player...');
+
+      this.midiPlayer = new MidiPlayer.Player((event) => {
+        if (this.midiInstrument && event.name === 'Note on') {
+          this.midiInstrument.play(event.noteName, this.audioContext.currentTime, {
+            gain: this.musicVolume * (event.velocity / 100)
+          });
         }
       });
+
+      // Load soundfont
+      Soundfont.instrument(this.audioContext, 'acoustic_grand_piano').then((instrument) => {
+        console.log('AudioManager: Soundfont loaded');
+        this.midiInstrument = instrument;
+        this.midiReady = true;
+
+        // Play pending track if any
+        if (this.pendingTrack) {
+          this.playMusic(this.pendingTrack);
+          this.pendingTrack = null;
+        }
+      }).catch((err) => {
+        console.warn('AudioManager: Soundfont load failed', err);
+      });
     } else {
-      console.warn('AudioManager: MIDI.js not loaded, using synthesized music');
+      console.warn('AudioManager: MIDI player libraries not loaded. MidiPlayer:', typeof MidiPlayer, 'Soundfont:', typeof Soundfont);
     }
 
     console.log('AudioManager: MIDI tracks available:', Object.keys(this.tracks));
@@ -86,34 +95,39 @@ export class AudioManager {
   }
 
   tryLoadAudioFile(path, trackName) {
-    // Try MIDI.js first
-    if (this.midiReady && typeof MIDI !== 'undefined') {
+    // Try MIDI player
+    if (this.midiReady && this.midiPlayer) {
       console.log('AudioManager: Loading MIDI file:', path);
-      console.log('AudioManager: MIDI.Player:', MIDI.Player);
 
-      // Use absolute path
-      const absolutePath = window.location.origin + '/' + path;
-      console.log('AudioManager: Absolute path:', absolutePath);
-
-      MIDI.Player.loadFile(absolutePath, () => {
-        console.log('AudioManager: ✓ MIDI file loaded successfully, starting playback');
-        MIDI.Player.loop = true;
-        MIDI.Player.start();
-        // Adjust volume
-        MIDI.setVolume(0, this.musicVolume * 127);
-        console.log('AudioManager: ✓ MIDI playback started');
-      }, (err) => {
-        console.error('AudioManager: ✗ MIDI load failed:', err);
-        console.log('AudioManager: Tried to load:', absolutePath);
-        // Don't play synthesized music - just be silent
-      });
-    } else if (!this.midiReady && typeof MIDI !== 'undefined') {
-      // MIDI.js not ready yet, queue for later
-      console.log('AudioManager: MIDI.js not ready yet, queuing track:', trackName);
+      // Fetch and load the MIDI file
+      fetch(path)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          return response.arrayBuffer();
+        })
+        .then(arrayBuffer => {
+          console.log('AudioManager: ✓ MIDI file fetched, loading...');
+          this.midiPlayer.loadArrayBuffer(arrayBuffer);
+          this.midiPlayer.on('endOfFile', () => {
+            // Loop the music
+            this.midiPlayer.play();
+          });
+          this.midiPlayer.play();
+          console.log('AudioManager: ✓ MIDI playback started');
+        })
+        .catch(err => {
+          console.error('AudioManager: ✗ MIDI load failed:', err);
+          console.log('AudioManager: Tried to load:', path);
+        });
+    } else if (!this.midiReady && this.midiPlayer) {
+      // MIDI player not ready yet, queue for later
+      console.log('AudioManager: MIDI player not ready yet, queuing track:', trackName);
       this.pendingTrack = trackName;
     } else {
-      // MIDI.js not available, no music
-      console.error('AudioManager: MIDI.js not available! MIDI object:', typeof MIDI);
+      // MIDI player not available, no music
+      console.error('AudioManager: MIDI player not available! MidiPlayer:', typeof MidiPlayer);
       console.log('AudioManager: No music will play');
     }
   }
@@ -124,9 +138,9 @@ export class AudioManager {
 
     console.log('AudioManager: Stopping music');
 
-    // Stop MIDI.js if playing
-    if (typeof MIDI !== 'undefined' && MIDI.Player) {
-      MIDI.Player.stop();
+    // Stop MIDI player if playing
+    if (this.midiPlayer) {
+      this.midiPlayer.stop();
     }
 
     // Stop HTML5 audio if playing
@@ -135,10 +149,7 @@ export class AudioManager {
       this.audioElement = null;
     }
 
-    // Stop synthesized music
-    this.isPlayingMusic = false;
     this.currentTrack = null;
-    this.currentMelody = null;
   }
 
   setMusicVolume(volume) {
@@ -146,10 +157,7 @@ export class AudioManager {
     if (this.audioElement) {
       this.audioElement.volume = this.musicVolume;
     }
-    // Update MIDI volume (0-127 range)
-    if (typeof MIDI !== 'undefined' && MIDI.setVolume) {
-      MIDI.setVolume(0, this.musicVolume * 127);
-    }
+    // Volume is handled per-note in midi-player callback
   }
 
   toggleMusic() {
