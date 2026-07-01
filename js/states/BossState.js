@@ -57,11 +57,13 @@ export class BossState extends BaseState {
 
   enter() {
     console.log('BossState: Entering boss fight, phase', this.phase);
+    console.log('BossState: Character data:', this.characterData);
 
-    // Create player
-    this.player = new Player(this.characterData);
+    // Create player at starting position
+    this.player = new Player(this.characterData, 100, 250);
     this.player.health = this.difficultyConfig.playerHealth;
     this.player.maxHealth = this.difficultyConfig.playerHealth;
+    console.log('BossState: Player created at', this.player.position, 'HP:', this.player.health);
 
     // Wingwomen stay active throughout boss fight
     const companionCharacters = this.allCharacters || CHARACTERS;
@@ -69,6 +71,15 @@ export class BossState extends BaseState {
       this.characterData,
       companionCharacters
     );
+
+    // Set player reference for AI
+    this.wingwomenManager.playerCharacter = this.player;
+    this.wingwomenManager.companions.forEach(companion => {
+      if (companion.aiController) {
+        companion.aiController.player = this.player;
+      }
+    });
+
     this.wingwomenManager.active = true;
     this.wingwomenManager.forceActive(); // Keep them on permanently
 
@@ -97,10 +108,11 @@ export class BossState extends BaseState {
       this.sajaBoys.push(boy);
     });
 
-    console.log('BossState: Created', this.sajaBoys.length, 'Saja Boys');
+    console.log('BossState: Created', this.sajaBoys.length, 'Saja Boys, turn-based mode:', this.turnBasedMode);
 
     // Start first turn in easy mode
     if (this.turnBasedMode) {
+      console.log('BossState: Activating initial turns for easy mode');
       this.activateNextTurns();
     }
   }
@@ -116,6 +128,7 @@ export class BossState extends BaseState {
     for (let i = 0; i < Math.min(this.maxActiveBoys, aliveBoys.length); i++) {
       const boyIndex = (this.currentTurnIndex + i) % aliveBoys.length;
       aliveBoys[boyIndex].activateTurn(this.turnDuration);
+      console.log('BossState: Activated', aliveBoys[boyIndex].boyType, 'turn');
     }
 
     this.currentTurnIndex = (this.currentTurnIndex + this.maxActiveBoys) % aliveBoys.length;
@@ -134,7 +147,7 @@ export class BossState extends BaseState {
         const initialsState = new InitialsEntryState(
           this.game,
           this.scoreManager.currentScore,
-          this.characterData.name,
+          this.characterData,
           this.difficulty,
           'story'
         );
@@ -143,7 +156,7 @@ export class BossState extends BaseState {
         const gameOverState = new GameOverState(
           this.game,
           this.scoreManager.currentScore,
-          this.characterData.name,
+          this.characterData,
           this.difficulty,
           'story'
         );
@@ -160,7 +173,7 @@ export class BossState extends BaseState {
           const initialsState = new InitialsEntryState(
             this.game,
             this.scoreManager.currentScore,
-            this.characterData.name,
+            this.characterData,
             this.difficulty,
             'story'
           );
@@ -169,7 +182,7 @@ export class BossState extends BaseState {
           const gameOverState = new GameOverState(
             this.game,
             this.scoreManager.currentScore,
-            this.characterData.name,
+            this.characterData,
             this.difficulty,
             'story'
           );
@@ -198,7 +211,12 @@ export class BossState extends BaseState {
 
     // Update wingwomen
     const allPlayers = [this.player, ...this.wingwomenManager.getActiveCompanions()];
-    this.wingwomenManager.update(dt, this.player);
+    const allEnemies = [...this.sajaBoys, ...this.summonedEnemies];
+    if (this.finalBoss && this.finalBoss.active) {
+      allEnemies.push(this.finalBoss);
+    }
+
+    this.wingwomenManager.update(dt, allEnemies);
     this.wingwomenManager.getActiveCompanions().forEach(companion => {
       if (companion.freezeTimer > 0) {
         companion.freezeTimer -= dt;
@@ -245,7 +263,8 @@ export class BossState extends BaseState {
       });
 
       // Check if all Saja Boys defeated
-      if (this.sajaBoys.every(boy => !boy.active)) {
+      const aliveBoys = this.sajaBoys.filter(boy => boy.active);
+      if (aliveBoys.length === 0 && this.sajaBoys.length > 0) {
         console.log('BossState: All Saja Boys defeated, transitioning to phase 2');
         this.phaseTransitioning = true;
         this.phaseTransitionTimer = 0;
@@ -304,10 +323,11 @@ export class BossState extends BaseState {
       if (player.justAttacked) {
         // Check for throwing knife projectiles
         if (player.characterType === 'zoey') {
+          const damage = player.attackDamage * this.difficultyConfig.playerDamageMultiplier;
           const projectile = new Projectile(
             player.position.x + player.size.x,
             player.position.y + player.size.y / 2 - 8,
-            0
+            damage
           );
           this.projectiles.push(projectile);
           this.game.audioManager.playAttackSound(player.characterType);
@@ -317,7 +337,7 @@ export class BossState extends BaseState {
           if (attackBox) {
             this.sajaBoys.forEach(boy => {
               if (boy.active && CollisionDetector.checkAABB(attackBox, boy)) {
-                const damage = player.damage * this.difficultyConfig.playerDamageMultiplier;
+                const damage = player.attackDamage * this.difficultyConfig.playerDamageMultiplier;
                 boy.takeDamage(damage);
                 this.game.audioManager.playHitSound();
 
@@ -329,7 +349,7 @@ export class BossState extends BaseState {
 
             // Attack Gwi-Ma in phase 2
             if (this.finalBoss && this.finalBoss.active && CollisionDetector.checkAABB(attackBox, this.finalBoss)) {
-              const damage = player.damage * this.difficultyConfig.playerDamageMultiplier;
+              const damage = player.attackDamage * this.difficultyConfig.playerDamageMultiplier;
               this.finalBoss.takeDamage(damage);
               this.game.audioManager.playHitSound();
             }
@@ -407,7 +427,7 @@ export class BossState extends BaseState {
 
         const attackBox = player.getAttackBox();
         if (attackBox && player.isAttacking && CollisionDetector.checkAABB(attackBox, enemy)) {
-          const damage = player.damage * this.difficultyConfig.playerDamageMultiplier;
+          const damage = player.attackDamage * this.difficultyConfig.playerDamageMultiplier;
           enemy.health -= damage;
 
           if (enemy.health <= 0) {
@@ -494,10 +514,10 @@ export class BossState extends BaseState {
     this.healthPills.push(pill);
   }
 
-  handleInput(inputState) {
+  handleInput(inputState, dt) {
     if (this.player && !this.gameOver && !this.victory && !this.phaseTransitioning) {
       if (this.player.freezeTimer <= 0) {
-        this.player.handleInput(inputState);
+        this.player.handleInput(inputState, dt);
       }
     }
   }
@@ -576,20 +596,32 @@ export class BossState extends BaseState {
 
     // Victory screen
     if (this.victory) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
       ctx.fillStyle = '#ffff00';
-      ctx.font = 'bold 64px monospace';
+      ctx.font = 'bold 72px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('VICTORY!', ctx.canvas.width / 2, ctx.canvas.height / 2 - 40);
+      ctx.fillText('VICTORY!', ctx.canvas.width / 2, ctx.canvas.height / 2 - 60);
+
+      ctx.fillStyle = '#ff00ff';
+      ctx.font = 'bold 28px monospace';
+      ctx.fillText('STORY MODE COMPLETE', ctx.canvas.width / 2, ctx.canvas.height / 2 - 10);
 
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 24px monospace';
-      ctx.fillText('GWI-MA DEFEATED!', ctx.canvas.width / 2, ctx.canvas.height / 2 + 20);
+      ctx.fillText('GWI-MA DEFEATED!', ctx.canvas.width / 2, ctx.canvas.height / 2 + 30);
 
       ctx.font = '20px monospace';
-      ctx.fillText(`FINAL SCORE: ${this.scoreManager.currentScore}`, ctx.canvas.width / 2, ctx.canvas.height / 2 + 60);
+      ctx.fillText(`FINAL SCORE: ${this.scoreManager.currentScore}`, ctx.canvas.width / 2, ctx.canvas.height / 2 + 70);
+
+      // Animate
+      const pulse = Math.sin(this.victoryTimer * 0.005) * 0.2 + 0.8;
+      ctx.globalAlpha = pulse;
+      ctx.fillStyle = '#ffff00';
+      ctx.font = '16px monospace';
+      ctx.fillText('Processing results...', ctx.canvas.width / 2, ctx.canvas.height / 2 + 110);
+      ctx.globalAlpha = 1.0;
     }
   }
 

@@ -2,12 +2,13 @@ import { Entity } from './Entity.js';
 
 export class FinalBoss extends Entity {
   constructor(difficulty = 'easy') {
-    // Gwi-Ma is HUGE - 192px wide, 256px tall
-    // Positioned at right edge of screen
+    // Gwi-Ma is HUGE - covers entire right side
+    // 192px wide, full height of play area (360px from y=90 to y=450)
     const x = 608; // 800 - 192 = 608
-    const y = 200; // Centered vertically-ish
+    const y = 90; // Top of play area
+    const height = 360; // Full play area height
 
-    super(x, y, 192, 256);
+    super(x, y, 192, height);
 
     this.difficulty = difficulty;
     this.maxHealth = difficulty === 'easy' ? 2000 : 3000;

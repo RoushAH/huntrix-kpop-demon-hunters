@@ -88,6 +88,7 @@ export class SajaBoy extends Entity {
     }
 
     this.health -= amount;
+    console.log(`SajaBoy ${this.boyType}: took ${amount} damage, HP: ${this.health}/${this.maxHealth}`);
 
     // Berserker gets stronger as HP drops
     if (this.boyType === 'berserker') {
@@ -107,6 +108,7 @@ export class SajaBoy extends Entity {
     if (this.health <= 0) {
       this.health = 0;
       this.active = false;
+      console.log(`SajaBoy ${this.boyType}: DEFEATED! Setting active = false`);
     }
   }
 
@@ -142,9 +144,12 @@ export class SajaBoy extends Entity {
         this.turnDuration -= dt;
         if (this.turnDuration <= 0) {
           this.isMyTurn = false;
+          console.log(`SajaBoy ${this.boyType}: turn ended`);
         }
       } else {
-        // Not my turn - stay idle or move slowly
+        // Not my turn - stay idle, don't move
+        this.velocity.x = 0;
+        this.velocity.y = 0;
         return;
       }
     }

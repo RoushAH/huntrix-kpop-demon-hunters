@@ -85,7 +85,7 @@ export class BossCharacterSelectState extends BaseState {
     ctx.fillStyle = '#ffff00';
     ctx.font = '16px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('← → to select     SPACE to confirm', centerX, ctx.canvas.height - 40);
+    ctx.fillText('← → to select     ENTER to confirm', centerX, ctx.canvas.height - 40);
 
     // Current score
     ctx.fillStyle = '#ffffff';
@@ -96,7 +96,7 @@ export class BossCharacterSelectState extends BaseState {
   }
 
   handleInput(inputState) {
-    if (!inputState.attack && !inputState.left && !inputState.right) {
+    if (!inputState.confirm && !inputState.left && !inputState.right) {
       this.inputBlocked = false;
     }
 
@@ -110,7 +110,7 @@ export class BossCharacterSelectState extends BaseState {
       this.selectedIndex = (this.selectedIndex + 1) % this.characters.length;
       this.game.audioManager.playUISound();
       this.inputBlocked = true;
-    } else if (inputState.attack) {
+    } else if (inputState.confirm) {
       const selectedCharacter = this.characters[this.selectedIndex];
       this.game.audioManager.playSelectSound();
 

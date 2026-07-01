@@ -7,7 +7,8 @@ export class InputManager {
       right: false,
       up: false,
       down: false,
-      attack: false
+      attack: false,
+      confirm: false
     };
 
     this.touchStart = null;
@@ -77,6 +78,9 @@ export class InputManager {
       case 'x':
         this.currentInput.attack = true;
         break;
+      case 'enter':
+        this.currentInput.confirm = true;
+        break;
     }
   }
 
@@ -101,6 +105,9 @@ export class InputManager {
       case ' ':
       case 'x':
         this.currentInput.attack = false;
+        break;
+      case 'enter':
+        this.currentInput.confirm = false;
         break;
     }
   }

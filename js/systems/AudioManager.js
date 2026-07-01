@@ -11,7 +11,7 @@ export class AudioManager {
       level1: 'assets/audio/music/Level1.mid',
       level2: 'assets/audio/music/Level2.mid',
       level3: 'assets/audio/music/Level3.mid',
-      boss: 'assets/audio/music/Boss.mid',
+      boss: 'assets/audio/music/KPop Demon Hunters - Your Idol.mid',
       victory: 'assets/audio/music/Level1.mid',
       gameover: 'assets/audio/music/Level1.mid'
     };
