@@ -27,7 +27,7 @@ export class WingwomenManager {
         // Make companions much weaker
         companion.baseSpeed = companion.baseSpeed * 0.5;
         companion.attackDamage = companion.attackDamage * 0.4;
-        companion.attackCooldown = 600;
+        companion.attackCooldown = 0; // Start ready to attack immediately
 
         console.log('Created companion:', companion.name,
           'speed:', companion.baseSpeed,

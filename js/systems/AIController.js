@@ -76,24 +76,26 @@ export class AIController {
   handleRangedBehavior(targetEnemy, distance) {
     const optimalDistance = 200; // Mira wants to stay ~200px away (closer to action)
 
+    // Much more aggressive - attack as soon as in range
     if (distance < this.attackRange && this.entity.attackCooldown <= 0 && !this.entity.isAttacking) {
       // In range, attack
       this.state = 'attack';
       this.entity.velocity.x = 0;
       this.entity.velocity.y = 0;
+      console.log('AI Mira attacking! Distance:', Math.round(distance), 'Range:', this.attackRange);
       this.entity.attack();
-    } else if (distance < optimalDistance * 0.6) {
-      // Too close, back away (< 120px)
+    } else if (distance < optimalDistance * 0.5) {
+      // Too close, back away (< 100px)
       this.state = 'retreat';
       const awayDirection = this.entity.position.clone().subtract(targetEnemy.position).normalize();
       this.entity.velocity = awayDirection.multiply(this.entity.baseSpeed * 0.8);
-    } else if (distance > this.attackRange) {
-      // Too far, move closer but slowly
+    } else if (distance > optimalDistance) {
+      // Too far, move closer more aggressively
       this.state = 'position';
       const direction = targetEnemy.position.clone().subtract(this.entity.position).normalize();
-      this.entity.velocity = direction.multiply(this.entity.baseSpeed * 0.5);
+      this.entity.velocity = direction.multiply(this.entity.baseSpeed * 0.7); // Was 0.5, now 0.7
     } else {
-      // Just right, hold position
+      // In sweet spot (100-200px), hold position and keep attacking
       this.state = 'hold';
       this.entity.velocity.x = 0;
       this.entity.velocity.y = 0;
