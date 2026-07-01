@@ -5,16 +5,19 @@ export class AudioManager {
     this.musicVolume = 0.5;
     this.sfxVolume = 0.7;
 
-    // MIDI/Music tracks
+    // Music tracks - using synthesized music for now
+    // To use MP3s, convert MIDI files and change extensions to .mp3
     this.tracks = {
-      title: 'assets/audio/music/Takedown (from the Netflix Film KPop Demon Hunters) - HUNTR_X, EJAE, AUDREY NUNA, REI AMI, KPop Demo.mid',
-      level1: 'assets/audio/music/KPop Demon Hunters - Your Idol.mid',
-      level2: 'assets/audio/music/KPop Demon Hunters - Your Idol.mid', // Reuse for now
-      level3: 'assets/audio/music/KPop Demon Hunters - Your Idol.mid', // Reuse for now
-      boss: 'assets/audio/music/Takedown (from the Netflix Film KPop Demon Hunters) - HUNTR_X, EJAE, AUDREY NUNA, REI AMI, KPop Demo.mid',
-      victory: 'assets/audio/music/KPop Demon Hunters - Your Idol.mid',
-      gameover: 'assets/audio/music/KPop Demon Hunters - Your Idol.mid'
+      title: 'assets/audio/music/Level1.mp3',    // Title plays Level 1 music
+      level1: 'assets/audio/music/Level1.mp3',
+      level2: 'assets/audio/music/Level2.mp3',
+      level3: 'assets/audio/music/Level3.mp3',
+      boss: 'assets/audio/music/Boss.mp3',
+      victory: 'assets/audio/music/Level1.mp3',
+      gameover: 'assets/audio/music/Level1.mp3'
     };
+
+    this.audioElement = null; // HTML5 Audio element for music
 
     this.currentTrack = null;
     this.midiLoaded = false;
@@ -46,17 +49,44 @@ export class AudioManager {
 
   // Music control
   playMusic(trackName) {
-    if (!this.musicEnabled || !this.audioContext) return;
+    if (!this.musicEnabled) return;
 
     if (this.currentTrack === trackName) return; // Already playing
 
     this.stopMusic();
     this.currentTrack = trackName;
 
-    console.log('AudioManager: Playing music track:', trackName);
+    const trackPath = this.tracks[trackName];
+    console.log('AudioManager: Playing music track:', trackName, trackPath);
 
-    // Play chiptune-style looping music
-    this.playChiptuneLoop(trackName);
+    // Try to load audio file
+    this.tryLoadAudioFile(trackPath, trackName);
+  }
+
+  tryLoadAudioFile(path, trackName) {
+    // Create audio element
+    this.audioElement = new Audio(path);
+    this.audioElement.loop = true;
+    this.audioElement.volume = this.musicVolume;
+
+    // Handle errors (file not found, etc)
+    this.audioElement.addEventListener('error', (e) => {
+      console.warn('AudioManager: Could not load audio file, using synthesized music');
+      this.audioElement = null;
+      // Fall back to synthesized music
+      this.playChiptuneLoop(trackName);
+    });
+
+    // Play when loaded
+    this.audioElement.addEventListener('canplaythrough', () => {
+      this.audioElement.play().catch(err => {
+        console.warn('AudioManager: Autoplay blocked, using synthesized music');
+        this.playChiptuneLoop(trackName);
+      });
+    });
+
+    // Try to load
+    this.audioElement.load();
   }
 
   playChiptuneLoop(trackName) {
@@ -143,6 +173,14 @@ export class AudioManager {
     if (!this.currentTrack) return;
 
     console.log('AudioManager: Stopping music');
+
+    // Stop HTML5 audio if playing
+    if (this.audioElement) {
+      this.audioElement.pause();
+      this.audioElement = null;
+    }
+
+    // Stop synthesized music
     this.isPlayingMusic = false;
     this.currentTrack = null;
     this.currentMelody = null;
@@ -150,7 +188,9 @@ export class AudioManager {
 
   setMusicVolume(volume) {
     this.musicVolume = Math.max(0, Math.min(1, volume));
-    // TODO: Update MIDI volume
+    if (this.audioElement) {
+      this.audioElement.volume = this.musicVolume;
+    }
   }
 
   toggleMusic() {

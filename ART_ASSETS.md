@@ -63,7 +63,7 @@ assets/
 
 ### Character 2: Zoey (Red/Pink Hunter)
 
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+**Theme**: Fast attacker, martial arts, red/pink/black color scheme
 
 |File|Dimensions|Frames|Description|
 |-|-|-|-|
@@ -79,7 +79,7 @@ assets/
 
 ### Character 3: Mira (Blue Hunter)
 
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+**Theme**: Ranged attacker, throwing knives, blue/cyan/white color scheme
 
 |File|Dimensions|Frames|Description|
 |-|-|-|-|
