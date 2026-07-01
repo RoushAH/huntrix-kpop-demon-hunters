@@ -114,32 +114,16 @@ export class TitleState extends BaseState {
     const startY = centerY + 100;
     const optionsY = centerY + 140;
 
-    // Start button - use press_start sprite
-    const pressStart = this.game.images['press_start'];
-    if (pressStart && pressStart.complete && this.selectedOption === 0) {
-      const startScale = 0.7;
-      const startWidth = pressStart.width * startScale;
-      const startHeight = pressStart.height * startScale;
-      const startX = centerX - startWidth / 2;
-      const startYPos = startY - startHeight / 2;
-      ctx.drawImage(pressStart, startX, startYPos, startWidth, startHeight);
-
-      // Selection indicator
+    // Start button - text only, no sprite
+    if (this.selectedOption === 0) {
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 3;
-      ctx.strokeRect(startX - 5, startYPos - 5, startWidth + 10, startHeight + 10);
-    } else {
-      // Options or unselected START
-      if (this.selectedOption === 0) {
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(centerX - 100, startY - 25, 200, 40);
-      }
-      ctx.fillStyle = this.selectedOption === 0 ? '#ffffff' : '#9966ff';
-      ctx.font = 'bold 18px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('START', centerX, startY);
+      ctx.strokeRect(centerX - 100, startY - 25, 200, 40);
     }
+    ctx.fillStyle = this.selectedOption === 0 ? '#ffffff' : '#9966ff';
+    ctx.font = 'bold 18px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('START', centerX, startY);
 
     // Options button (text based)
     if (this.selectedOption === 1) {
