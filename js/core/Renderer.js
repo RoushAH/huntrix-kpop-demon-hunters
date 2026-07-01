@@ -1,6 +1,9 @@
 export class Renderer {
-  static renderBackground(ctx, images, level = 1) {
+  static renderBackground(ctx, images, level = 1, parallaxOffset = 0) {
     const levelKey = level > 3 ? 'boss' : `level${level}`;
+
+    // Parallax speeds: layer 1 (far) slowest, layer 3 (near) fastest
+    const parallaxSpeeds = [0.2, 0.5, 1.0];
 
     // Render 3 parallax layers
     for (let i = 1; i <= 3; i++) {
@@ -8,12 +11,19 @@ export class Renderer {
       const bg = images[bgKey];
 
       if (bg && bg.complete) {
-        // Scale to fit canvas width, maintain aspect ratio
-        const scale = ctx.canvas.width / bg.width;
+        // Scale background to be 1.5x canvas width for scrolling room
+        const bgWidth = ctx.canvas.width * 1.5;
+        const scale = bgWidth / bg.width;
         const scaledHeight = bg.height * scale;
         const yOffset = (ctx.canvas.height - scaledHeight) / 2;
 
-        ctx.drawImage(bg, 0, yOffset, ctx.canvas.width, scaledHeight);
+        // Calculate parallax offset for this layer
+        const layerSpeed = parallaxSpeeds[i - 1];
+        const xOffset = -(parallaxOffset * layerSpeed) % bgWidth;
+
+        // Draw the background twice for seamless wrapping
+        ctx.drawImage(bg, xOffset, yOffset, bgWidth, scaledHeight);
+        ctx.drawImage(bg, xOffset + bgWidth, yOffset, bgWidth, scaledHeight);
       }
     }
 

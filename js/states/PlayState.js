@@ -302,8 +302,8 @@ export class PlayState extends BaseState {
 
     const images = this.game.images;
 
-    // Render background
-    Renderer.renderBackground(ctx, images, this.currentLevel);
+    // Render background with parallax
+    Renderer.renderBackground(ctx, images, this.currentLevel, this.parallaxOffset);
 
     this.player.render(ctx, images);
 

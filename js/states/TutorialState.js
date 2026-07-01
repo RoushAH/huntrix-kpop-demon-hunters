@@ -76,7 +76,7 @@ export class TutorialState extends BaseState {
     // Arrow keys diagram - use sprite if available
     const arrowKeys = images['tutorial_arrow_keys'];
     if (arrowKeys && arrowKeys.complete) {
-      ctx.drawImage(arrowKeys, leftCol - 32, topRow - 32, 64, 64);
+      ctx.drawImage(arrowKeys, leftCol - 64, topRow - 64, 128, 128);
     } else {
       this.drawArrowKeys(ctx, leftCol, topRow);
     }
@@ -93,7 +93,7 @@ export class TutorialState extends BaseState {
     // Space key - use sprite if available
     const spaceKey = images['tutorial_space_key'];
     if (spaceKey && spaceKey.complete) {
-      ctx.drawImage(spaceKey, rightCol - 32, topRow - 32, 64, 64);
+      ctx.drawImage(spaceKey, rightCol - 64, topRow - 64, 128, 128);
     } else {
       this.drawSpaceKey(ctx, rightCol, topRow);
     }
