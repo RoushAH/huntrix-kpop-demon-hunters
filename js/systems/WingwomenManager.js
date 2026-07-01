@@ -15,14 +15,21 @@ export class WingwomenManager {
   }
 
   createCompanions(playerChar, allCharacters) {
-    return allCharacters
+    console.log('Creating companions for player:', playerChar.name);
+    console.log('All characters:', allCharacters.map(c => c.name));
+
+    const companions = allCharacters
       .filter(c => c.name !== playerChar.name)
       .map(c => {
         const companion = new Player(c, 50, 200);
         companion.isAI = true;
         companion.aiController = new AIController(companion);
+        console.log('Created companion:', companion.name);
         return companion;
       });
+
+    console.log('Total companions created:', companions.length);
+    return companions;
   }
 
   update(dt, enemies) {
@@ -38,6 +45,7 @@ export class WingwomenManager {
       this.timer = this.offDuration;
       return { event: 'companions_leave', newSpawnRate: CONFIG.SPAWN_RATE_LOW };
     } else if (!this.active && this.timer <= 0) {
+      console.log('WINGWOMEN JOINING! Companions:', this.companions.length);
       this.active = true;
       this.timer = this.onDuration;
       this.resetCompanionPositions();

@@ -52,21 +52,23 @@ def generate_image(prompt, output_path="test_output.png", width=1024, height=102
         return None
 
 if __name__ == "__main__":
-    # Single Rumi idle pose - MATCHING COVER PHOTO STYLE
-    prompt = """FULL BODY character sprite art from head to toe including feet and weapon.
-STYLE: Cute anime K-pop idol aesthetic exactly like retro arcade pixel art games (Street Fighter, Final Fight character select screens).
-Character: Young woman named Rumi, demon hunter.
-MUST SHOW: Complete figure from top of head down to bottom of boots, PLUS her large sword weapon.
-HAIR: Bright purple (#9966ff) styled in two high buns with long braids, gold hoop earrings.
-FACE: Cute anime style with large expressive eyes, K-pop idol look, confident smile.
-BODY: Golden yellow cropped bomber jacket (very bright), white crop top showing midriff, black shorts with prominent gold belt buckle.
-LEGS AND FEET: Visible legs, black platform combat boots with gold accents and laces.
-WEAPON: Large glowing purple/magenta energy sword held in one hand - the sword blade should be as tall as her torso, very prominent.
-POSE: Standing ready stance, weight on both feet, holding sword, facing 3/4 toward viewer.
-FRAMING: Full body shot zoomed out enough to see head, torso, legs, feet, boots AND the full sword blade.
-PROPORTIONS: Slightly stylized/chibi cute proportions like arcade game characters - not realistic, anime cute.
-COLORS: Vibrant saturated colors - purple hair, bright yellow jacket, glowing purple sword.
-Background: Plain white or light gray for easy removal."""
+    # Single Rumi idle pose - CHIBI ARCADE BEAT-EM-UP STYLE
+    prompt = """FULL BODY character sprite in CHIBI SUPER-DEFORMED arcade beat-em-up style.
+REFERENCE STYLE: Streets of Rage, Final Fight, River City Girls - CUTE SHORT PROPORTIONS with big head, compact body.
+NOT tall anime proportions - CHIBI/SD style! Head should be 1/3 to 1/4 of total height. Cute and compact.
+
+Character: Rumi, young K-pop demon hunter girl.
+HAIR: ONE massive long purple braid (bright purple #9966ff) hanging down her back from a high ponytail. Large gold hoop earrings. NO buns, NO two braids - ONE thick braid is her signature!
+FACE: Large cute anime eyes, friendly expression, round face, K-pop idol cute.
+OUTFIT: Bright YELLOW/GOLD cropped bomber jacket - the jacket must be YELLOW color, not purple, not blue. White crop top underneath, black shorts with large gold belt buckle.
+FEET: Black platform combat boots with yellow/gold laces and accents.
+WEAPON: She is holding a large SWORD in her hand - glowing purple energy blade sword, very prominent and visible. NOT a whip or tail - a SWORD with a blade!
+
+POSE: Cute idle stance, standing ready, 3/4 front view.
+PROPORTIONS: CHIBI - big head, short legs, compact torso, cute arcade beat-em-up style. NOT realistic or tall.
+FRAMING: Full body head to toe including boots and sword.
+COLORS: BRIGHT vibrant - purple braid, YELLOW jacket (not green!), glowing purple sword, gold accents.
+Background: Plain neutral for easy removal."""
 
     # Generate at 1:1 for a single character
     output = generate_image(prompt, "rumi_v2.png", width=1, height=1)

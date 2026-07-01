@@ -7,6 +7,7 @@ import { HealthPill } from '../entities/HealthPill.js';
 import { WingwomenManager } from '../systems/WingwomenManager.js';
 import { CollisionDetector } from '../core/CollisionDetector.js';
 import { Renderer } from '../core/Renderer.js';
+import { CHARACTERS } from '../data/characters.js';
 import { CONFIG } from '../config.js';
 
 export class PlayState extends BaseState {
@@ -47,7 +48,12 @@ export class PlayState extends BaseState {
     this.player.maxHealth = this.difficultyConfig.playerHealth;
 
     this.enemySpawner = new EnemySpawner(this.difficulty, CONFIG.SPAWN_RATE_LOW);
-    this.wingwomenManager = new WingwomenManager(this.player, this.allCharacters || [this.characterData]);
+
+    const charactersForWingwomen = this.allCharacters && this.allCharacters.length > 1
+      ? this.allCharacters
+      : CHARACTERS;
+
+    this.wingwomenManager = new WingwomenManager(this.player, charactersForWingwomen);
 
     this.enemies = [];
     this.projectiles = [];
