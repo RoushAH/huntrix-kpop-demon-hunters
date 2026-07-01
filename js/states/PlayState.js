@@ -1,10 +1,12 @@
 import { BaseState } from './BaseState.js';
 import { CharacterSelectState } from './CharacterSelectState.js';
+import { GameOverState } from './GameOverState.js';
 import { Player } from '../entities/Player.js';
 import { EnemySpawner } from '../entities/EnemySpawner.js';
 import { Projectile } from '../entities/Projectile.js';
 import { HealthPill } from '../entities/HealthPill.js';
 import { WingwomenManager } from '../systems/WingwomenManager.js';
+import { ScoreManager } from '../systems/ScoreManager.js';
 import { CollisionDetector } from '../core/CollisionDetector.js';
 import { Renderer } from '../core/Renderer.js';
 import { CHARACTERS } from '../data/characters.js';
@@ -27,11 +29,7 @@ export class PlayState extends BaseState {
     this.healthPills = [];
     this.enemySpawner = null;
     this.wingwomenManager = null;
-
-    this.score = 0;
-    this.combo = 0;
-    this.comboTimer = 0;
-    this.comboTimeout = 3000;
+    this.scoreManager = new ScoreManager();
 
     this.gameOver = false;
     this.levelComplete = false;
@@ -58,8 +56,7 @@ export class PlayState extends BaseState {
     this.enemies = [];
     this.projectiles = [];
     this.healthPills = [];
-    this.score = 0;
-    this.combo = 0;
+    this.scoreManager.reset();
     this.gameOver = false;
   }
 
@@ -109,12 +106,8 @@ export class PlayState extends BaseState {
     this.projectiles = this.projectiles.filter(p => p.active);
     this.healthPills = this.healthPills.filter(p => p.active);
 
-    if (this.comboTimer > 0) {
-      this.comboTimer -= dt;
-      if (this.comboTimer <= 0) {
-        this.combo = 0;
-      }
-    }
+    // Update combo timer through ScoreManager
+    this.scoreManager.updateCombo(dt);
 
     if (this.player.health <= 0) {
       this.gameOver = true;
@@ -201,9 +194,8 @@ export class PlayState extends BaseState {
   }
 
   onEnemyDefeated(enemy) {
-    this.addScore(100);
-    this.combo++;
-    this.comboTimer = this.comboTimeout;
+    this.scoreManager.incrementCombo();
+    this.scoreManager.addPoints(100);
     this.enemiesDefeated++;
 
     if (enemy.shouldDropHealthPill()) {
@@ -214,17 +206,6 @@ export class PlayState extends BaseState {
       );
       this.healthPills.push(pill);
     }
-  }
-
-  addScore(points) {
-    let multiplier = 1;
-    if (this.combo >= CONFIG.COMBO_MULTIPLIER_THRESHOLD_2) {
-      multiplier = CONFIG.COMBO_MULTIPLIER_2;
-    } else if (this.combo >= CONFIG.COMBO_MULTIPLIER_THRESHOLD_1) {
-      multiplier = CONFIG.COMBO_MULTIPLIER_1;
-    }
-
-    this.score += Math.floor(points * multiplier);
   }
 
   render(ctx) {
@@ -253,7 +234,7 @@ export class PlayState extends BaseState {
       pill.render(ctx);
     });
 
-    Renderer.renderUI(ctx, this.player, this.score, this.combo);
+    Renderer.renderUI(ctx, this.player, this.scoreManager.currentScore, this.scoreManager.currentCombo);
 
     if (this.mode === 'story') {
       ctx.fillStyle = '#ffffff';
@@ -306,7 +287,7 @@ export class PlayState extends BaseState {
 
     ctx.fillStyle = '#00ff00';
     ctx.font = 'bold 32px monospace';
-    ctx.fillText(`SCORE: ${this.score}`, centerX, centerY);
+    ctx.fillText(`SCORE: ${this.scoreManager.currentScore}`, centerX, centerY);
 
     if (this.currentLevel < 3) {
       const nextCharacter = this.allCharacters[this.currentLevel];
@@ -343,8 +324,14 @@ export class PlayState extends BaseState {
     }
 
     if (this.gameOver && inputState.attack && !this.inputBlocked) {
-      const characterSelectState = new CharacterSelectState(this.game);
-      this.game.changeState(characterSelectState);
+      const gameOverState = new GameOverState(
+        this.game,
+        this.scoreManager.currentScore,
+        this.characterData,
+        this.difficulty,
+        this.mode
+      );
+      this.game.changeState(gameOverState);
     } else if (this.levelComplete && inputState.attack && !this.inputBlocked && this.levelCompleteTimer >= this.levelCompleteDelay) {
       if (this.currentLevel < 3) {
         const nextCharacter = this.allCharacters[this.currentLevel];
