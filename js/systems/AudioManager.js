@@ -2,8 +2,8 @@ export class AudioManager {
   constructor() {
     this.musicEnabled = true;
     this.sfxEnabled = true;
-    this.musicVolume = 0.5;
-    this.sfxVolume = 0.7;
+    this.musicVolume = 0.3; // Lower default - MIDI can be loud
+    this.sfxVolume = 0.5; // Moderate default for beeps
 
     // MIDI tracks - MIDI.js will handle playback
     this.tracks = {
@@ -166,6 +166,7 @@ export class AudioManager {
 
   setMusicVolume(volume) {
     this.musicVolume = Math.max(0, Math.min(1, volume));
+    console.log('AudioManager: Music volume set to', this.musicVolume);
     if (this.audioElement) {
       this.audioElement.volume = this.musicVolume;
     }
@@ -204,7 +205,7 @@ export class AudioManager {
       oscillator.type = waveforms[type] || 'sine';
       oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
 
-      gainNode.gain.setValueAtTime(this.sfxVolume * 0.3, this.audioContext.currentTime);
+      gainNode.gain.setValueAtTime(this.sfxVolume * 0.2, this.audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
 
       oscillator.start(this.audioContext.currentTime);
@@ -244,7 +245,7 @@ export class AudioManager {
       oscillator.frequency.setValueAtTime(440, this.audioContext.currentTime);
       oscillator.frequency.exponentialRampToValueAtTime(110, this.audioContext.currentTime + 0.3);
 
-      gainNode.gain.setValueAtTime(this.sfxVolume * 0.3, this.audioContext.currentTime);
+      gainNode.gain.setValueAtTime(this.sfxVolume * 0.2, this.audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
 
       oscillator.start(this.audioContext.currentTime);
@@ -298,6 +299,7 @@ export class AudioManager {
 
   setSFXVolume(volume) {
     this.sfxVolume = Math.max(0, Math.min(1, volume));
+    console.log('AudioManager: SFX volume set to', this.sfxVolume);
   }
 
   toggleSFX() {
