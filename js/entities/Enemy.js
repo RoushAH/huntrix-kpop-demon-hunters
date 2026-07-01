@@ -4,9 +4,9 @@ import { CONFIG } from '../config.js';
 export class Enemy extends Entity {
   constructor(x, y, type = 'basic', difficultyConfig, difficulty = 'easy') {
     const sizes = {
-      basic: { width: 32, height: 48 },
-      fast: { width: 24, height: 40 },
-      tank: { width: 48, height: 64 }
+      basic: { width: 42, height: 62 },   // 30% larger (was 32x48)
+      fast: { width: 31, height: 52 },    // 30% larger (was 24x40)
+      tank: { width: 62, height: 83 }     // 30% larger (was 48x64)
     };
 
     const size = sizes[type] || sizes.basic;

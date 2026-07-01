@@ -3,7 +3,7 @@ export const CONFIG = {
   CANVAS_HEIGHT: 450,
 
   PLAYER_BASE_SPEED: 150,
-  PLAYER_SIZE: { width: 32, height: 48 },
+  PLAYER_SIZE: { width: 42, height: 62 }, // 30% larger (was 32x48)
 
   ENEMY_BASE_SPEED: 80,
   ENEMY_SPAWN_X: 850,
