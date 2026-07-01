@@ -96,99 +96,19 @@ export class AudioManager {
         // Adjust volume
         MIDI.setVolume(0, this.musicVolume * 127);
       }, (err) => {
-        console.warn('AudioManager: MIDI load failed, using synthesized music', err);
-        this.playChiptuneLoop(trackName);
+        console.warn('AudioManager: MIDI load failed', err);
+        // Don't play synthesized music - just be silent
       });
     } else if (!this.midiReady && typeof MIDI !== 'undefined') {
       // MIDI.js not ready yet, queue for later
       console.log('AudioManager: MIDI.js not ready yet, queuing track');
       this.pendingTrack = trackName;
     } else {
-      // MIDI.js not available, fall back
-      console.log('AudioManager: MIDI.js not available, using synthesized music');
-      this.playChiptuneLoop(trackName);
+      // MIDI.js not available, no music
+      console.log('AudioManager: MIDI.js not available, no music will play');
     }
   }
 
-  playChiptuneLoop(trackName) {
-    if (!this.audioContext) return;
-
-    // Simple chiptune melodies for each track
-    const melodies = {
-      title: [
-        { freq: 523, duration: 0.3 }, // C
-        { freq: 659, duration: 0.3 }, // E
-        { freq: 784, duration: 0.3 }, // G
-        { freq: 1047, duration: 0.6 }, // C
-        { freq: 784, duration: 0.3 }, // G
-        { freq: 659, duration: 0.3 }, // E
-        { freq: 523, duration: 0.6 }, // C
-      ],
-      level1: [
-        { freq: 440, duration: 0.2 }, // A
-        { freq: 554, duration: 0.2 }, // C#
-        { freq: 659, duration: 0.2 }, // E
-        { freq: 440, duration: 0.2 },
-        { freq: 554, duration: 0.2 },
-        { freq: 659, duration: 0.2 },
-        { freq: 880, duration: 0.4 },
-      ],
-      level2: [
-        { freq: 494, duration: 0.2 }, // B
-        { freq: 622, duration: 0.2 }, // D#
-        { freq: 740, duration: 0.2 }, // F#
-        { freq: 494, duration: 0.2 },
-        { freq: 622, duration: 0.2 },
-        { freq: 740, duration: 0.2 },
-        { freq: 988, duration: 0.4 },
-      ],
-      level3: [
-        { freq: 330, duration: 0.2 }, // E
-        { freq: 415, duration: 0.2 }, // G#
-        { freq: 494, duration: 0.2 }, // B
-        { freq: 330, duration: 0.2 },
-        { freq: 415, duration: 0.2 },
-        { freq: 494, duration: 0.2 },
-        { freq: 660, duration: 0.4 },
-      ]
-    };
-
-    const melody = melodies[trackName] || melodies.level1;
-    this.currentMelodyIndex = 0;
-    this.currentMelody = melody;
-    this.isPlayingMusic = true;
-
-    this.playNextNote();
-  }
-
-  playNextNote() {
-    if (!this.isPlayingMusic || !this.currentMelody) return;
-
-    const note = this.currentMelody[this.currentMelodyIndex];
-
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-
-      oscillator.type = 'square'; // Chiptune sound
-      oscillator.frequency.setValueAtTime(note.freq, this.audioContext.currentTime);
-
-      gainNode.gain.setValueAtTime(this.musicVolume * 0.15, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + note.duration);
-
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + note.duration);
-
-      // Schedule next note
-      this.currentMelodyIndex = (this.currentMelodyIndex + 1) % this.currentMelody.length;
-      setTimeout(() => this.playNextNote(), note.duration * 1000);
-    } catch (e) {
-      console.warn('AudioManager: Error playing note', e);
-    }
-  }
 
   stopMusic() {
     if (!this.currentTrack) return;

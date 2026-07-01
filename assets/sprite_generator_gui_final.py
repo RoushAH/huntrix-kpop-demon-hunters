@@ -55,11 +55,11 @@ SPRITE_QUEUE = [
 **Color palette**: Purple (#9966ff), gold accents, white/cream for clothing""",
         "dims": (128, 128), "frames": 1, "frame_size": (128, 128), "dir": "sprites/characters/rumi"},
     {"name": "zoey_idle", "prompt": """### Character 3: Zoey (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+**Theme**: Ranged attacker, throwing knives, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `zoey_idle.png` | 128×48px | 4 frames @ 32×48px | Fighting stance, hands ready |
+| `zoey_idle.png` | 128×48px | 4 frames @ 32×48px | Fighting stance, knife visible |
 
 ### Format
 - **File type**: PNG with transparency
@@ -70,7 +70,7 @@ SPRITE_QUEUE = [
 **Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (128, 48), "frames": 4, "frame_size": (32, 48), "dir": "sprites/characters/zoey"},
     {"name": "zoey_walk", "prompt": """### Character 3: Zoey (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+**Theme**: Ranged attacker, throwing knives, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -85,11 +85,11 @@ SPRITE_QUEUE = [
 **Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (192, 48), "frames": 6, "frame_size": (32, 48), "dir": "sprites/characters/zoey"},
     {"name": "zoey_attack", "prompt": """### Character 3: Zoey (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+**Theme**: Ranged attacker, throwing knives, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `zoey_attack.png` | 240×48px | 5 frames @ 48×48px | Punch/kick combo |
+| `zoey_attack.png` | 240×48px | 5 frames @ 48×48px | Throwing knife wind-up and release |
 
 ### Format
 - **File type**: PNG with transparency
@@ -100,7 +100,7 @@ SPRITE_QUEUE = [
 **Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (240, 48), "frames": 5, "frame_size": (48, 48), "dir": "sprites/characters/zoey"},
     {"name": "zoey_hit", "prompt": """### Character 3: Zoey (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+**Theme**: Fast attacker, Japanese naginata bladed pole-arm, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -115,7 +115,7 @@ SPRITE_QUEUE = [
 **Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (96, 48), "frames": 3, "frame_size": (32, 48), "dir": "sprites/characters/zoey"},
     {"name": "zoey_portrait", "prompt": """### Character 3: Zoey (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+**Theme**: Fast attacker, Japanese naginata bladed pole-arm, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
