@@ -10,22 +10,22 @@ def generate_rumi_final():
         region_name='us-west-2'
     )
 
-    # Ultra-specific about the single braid
+    # Try describing it as a single thick ponytail instead of braid
     prompt = """Chibi arcade beat-em-up character sprite, full body from head to boots.
 Girl named Rumi holding glowing purple sword weapon.
-HAIRSTYLE CRITICAL: Hair is pulled up into ONE high ponytail at top of head, then braided into ONE SINGLE THICK PURPLE BRAID that hangs down her back. NOT two braids, NOT pigtails, NOT twintails - ONE BRAID ONLY hanging from a high ponytail.
-OUTFIT: Bright golden yellow cropped bomber jacket, black shorts, platform boots with yellow accents. Gold hoop earrings.
-WEAPON: Large glowing purple/white energy sword held in one hand - blade is very prominent and visible.
+HAIRSTYLE: Vibrant purple hair pulled up into ONE SINGLE MASSIVE HIGH PONYTAIL - a thick rope of purple hair hanging down from the top of her head. Just ONE ponytail, NOT two. Gold hair accessories/clips. Gold hoop earrings.
+OUTFIT: Bright golden yellow cropped bomber jacket, black shorts, platform boots with yellow/gold accents.
+WEAPON: Large glowing purple/cyan energy sword held ready - blade is very prominent and visible.
 STYLE: Super-deformed chibi proportions like Final Fight or River City Girls - big head, short legs, cute arcade game style.
 POSE: Standing front-facing ready stance.
-COLORS: Vibrant purple hair in ONE braid, bright yellow jacket, glowing purple sword.
+COLORS: Vibrant purple hair, bright yellow jacket, glowing purple sword.
 Background: neutral dark."""
 
     request_body = {
         "prompt": prompt,
         "aspect_ratio": "1:1",
         "output_format": "png",
-        "seed": 42  # Use the seed that worked well before
+        "seed": 888  # Try different seed
     }
 
     response = bedrock.invoke_model(
