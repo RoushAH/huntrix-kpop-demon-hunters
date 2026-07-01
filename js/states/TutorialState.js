@@ -128,43 +128,43 @@ export class TutorialState extends BaseState {
     ctx.textAlign = 'center';
     ctx.fillText('MOVE', leftCol, topRow - 40);
 
-    // Drag gesture - use sprite if available
+    // Drag gesture - use sprite if available (stretched taller to match tap gesture)
     const dragGesture = images['tutorial_drag_gesture'];
     if (dragGesture && dragGesture.complete) {
-      // 3-frame animation: 192×64px = 64×64px per frame
+      // 3-frame animation: 192×64px = 64×64px per frame, render at 64×96 (50% taller)
       const frameWidth = 64;
       const frameX = this.animFrame * frameWidth;
-      ctx.drawImage(dragGesture, frameX, 0, frameWidth, 64, leftCol - 32, topRow - 32, 64, 64);
+      const renderWidth = 64;
+      const renderHeight = 96;
+      ctx.drawImage(dragGesture, frameX, 0, frameWidth, 64,
+                    leftCol - renderWidth/2, topRow - renderHeight/2, renderWidth, renderHeight);
     } else {
       this.drawDragGesture(ctx, leftCol, topRow, this.animFrame);
     }
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
-    ctx.fillText('DRAG', leftCol, topRow + 80);
+    ctx.fillText('DRAG', leftCol, topRow + 96);
 
     // Attack section
     ctx.fillStyle = '#9966ff';
     ctx.font = 'bold 24px monospace';
     ctx.fillText('ATTACK', rightCol, topRow - 60);
 
-    // Tap gesture - use sprite if available (stretched taller to match hand proportions)
+    // Tap gesture - use sprite if available
     const tapGesture = images['tutorial_tap_gesture'];
     if (tapGesture && tapGesture.complete) {
-      // 3-frame animation: 192×64px = 64×64px per frame, render at 64×96 (50% taller)
+      // 3-frame animation: 192×64px = 64×64px per frame
       const frameWidth = 64;
       const frameX = this.animFrame * frameWidth;
-      const renderWidth = 64;
-      const renderHeight = 96;
-      ctx.drawImage(tapGesture, frameX, 0, frameWidth, 64,
-                    rightCol - renderWidth/2, topRow - renderHeight/2, renderWidth, renderHeight);
+      ctx.drawImage(tapGesture, frameX, 0, frameWidth, 64, rightCol - 32, topRow - 32, 64, 64);
     } else {
       this.drawTapGesture(ctx, rightCol, topRow, this.animFrame);
     }
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
-    ctx.fillText('TAP', rightCol, topRow + 96);
+    ctx.fillText('TAP', rightCol, topRow + 80);
 
     // Objective
     ctx.fillStyle = '#ff1493';
