@@ -28,8 +28,6 @@ export class Player extends Entity {
   update(dt) {
     super.update(dt);
 
-    this.justAttacked = false; // Reset flag each frame
-
     if (this.attackCooldown > 0) {
       this.attackCooldown -= dt;
     }
@@ -41,6 +39,10 @@ export class Player extends Entity {
         this.attackTimer = 0;
       }
     }
+  }
+
+  clearAttackFlag() {
+    this.justAttacked = false;
   }
 
   handleInput(inputState, dt) {
@@ -66,6 +68,7 @@ export class Player extends Entity {
     this.attackTimer = 0;
     this.attackCooldown = CONFIG.ATTACK_COOLDOWN;
     this.justAttacked = true; // Mark that attack just happened this frame
+    console.log(this.name, 'attacked! Type:', this.characterType, 'justAttacked:', this.justAttacked);
   }
 
   getAttackBox() {

@@ -101,6 +101,10 @@ export class PlayState extends BaseState {
 
     this.checkCollisions();
 
+    // Clear attack flags after collision checks
+    this.player.clearAttackFlag();
+    this.wingwomenManager.getActiveCompanions().forEach(c => c.clearAttackFlag());
+
     this.enemies = this.enemies.filter(e => e.active);
     this.projectiles = this.projectiles.filter(p => p.active);
     this.healthPills = this.healthPills.filter(p => p.active);
@@ -133,12 +137,14 @@ export class PlayState extends BaseState {
 
       // Create projectile if character just attacked and is ranged (Mira)
       if (player.justAttacked && player.characterType === 'mira') {
+        console.log('Creating projectile for', player.name, 'at position', player.position.x, player.position.y);
         const projectile = new Projectile(
           player.position.x + player.size.x,
           player.position.y + player.size.y / 2 - 8,
           player.attackDamage * this.difficultyConfig.playerDamageMultiplier
         );
         this.projectiles.push(projectile);
+        console.log('Projectile created! Total projectiles:', this.projectiles.length);
       }
     });
 
