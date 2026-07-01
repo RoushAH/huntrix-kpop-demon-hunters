@@ -342,6 +342,10 @@ export class PlayState extends BaseState {
     Renderer.renderUI(ctx, this.player, this.scoreManager.currentScore, this.scoreManager.currentCombo, this.game.images);
 
     if (this.mode === 'story') {
+      // Dark background box for level/enemies counter
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(590, 40, 200, 45);
+
       ctx.fillStyle = '#ffffff';
       ctx.font = '16px monospace';
       ctx.textAlign = 'right';
