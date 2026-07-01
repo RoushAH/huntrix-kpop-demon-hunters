@@ -23,7 +23,7 @@ export class FinalBoss extends Entity {
     // Enable sprite rendering
     this.spriteKey = 'gwima';
     this.useSprites = true;
-    this.currentAnimation = 'idle';
+    this.currentAnimation = 'hit'; // Always use hit sprite - idle looks bad
     this.animationFrame = 0;
     this.animationTimer = 0;
     this.animationSpeed = 100;
@@ -58,19 +58,12 @@ export class FinalBoss extends Entity {
 
   takeDamage(amount) {
     this.health -= amount;
+    // Always stay on hit animation - it looks better
     this.setAnimation('hit');
-
-    // Return to idle after hit animation
-    setTimeout(() => {
-      if (this.health > 0) {
-        this.setAnimation('idle');
-      } else {
-        this.setAnimation('death');
-      }
-    }, 300);
 
     if (this.health <= 0) {
       this.health = 0;
+      this.setAnimation('death');
       this.active = false;
     }
   }
