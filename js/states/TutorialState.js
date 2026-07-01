@@ -128,14 +128,14 @@ export class TutorialState extends BaseState {
     ctx.textAlign = 'center';
     ctx.fillText('MOVE', leftCol, topRow - 40);
 
-    // Drag gesture - use sprite if available (stretched much taller since hand is small within frame)
+    // Drag gesture - use sprite if available (stretched MUCH taller - hand is tiny in the sprite)
     const dragGesture = images['tutorial_drag_gesture'];
     if (dragGesture && dragGesture.complete) {
-      // 3-frame animation: 192×64px = 64×64px per frame, render at 64×128 (2x taller)
+      // 3-frame animation: 192×64px = 64×64px per frame, render at 64×192 (3x taller!)
       const frameWidth = 64;
       const frameX = this.animFrame * frameWidth;
       const renderWidth = 64;
-      const renderHeight = 128;
+      const renderHeight = 192;
       ctx.drawImage(dragGesture, frameX, 0, frameWidth, 64,
                     leftCol - renderWidth/2, topRow - renderHeight/2, renderWidth, renderHeight);
     } else {
@@ -144,7 +144,7 @@ export class TutorialState extends BaseState {
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
-    ctx.fillText('DRAG', leftCol, topRow + 112);
+    ctx.fillText('DRAG', leftCol, topRow + 140);
 
     // Attack section
     ctx.fillStyle = '#9966ff';
