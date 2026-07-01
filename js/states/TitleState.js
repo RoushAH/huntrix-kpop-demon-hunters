@@ -1,5 +1,6 @@
 import { BaseState } from './BaseState.js';
 import { TutorialState } from './TutorialState.js';
+import { OptionsState } from './OptionsState.js';
 
 export class TitleState extends BaseState {
   constructor(game) {
@@ -7,6 +8,8 @@ export class TitleState extends BaseState {
     this.blinkTimer = 0;
     this.showText = true;
     this.inputDetected = false;
+    this.selectedOption = 0; // 0 = start, 1 = options
+    this.lastInputTime = 0;
   }
 
   enter() {
@@ -14,6 +17,12 @@ export class TitleState extends BaseState {
     this.showText = true;
     this.inputDetected = false;
     this.inputBlocked = false;
+    this.selectedOption = 0;
+    this.lastInputTime = 0;
+
+    // Load saved audio settings
+    OptionsState.loadSettings(this.game.audioManager);
+
     // Don't start music until user interaction (browser autoplay policy)
   }
 
@@ -22,6 +31,10 @@ export class TitleState extends BaseState {
     if (this.blinkTimer >= 500) {
       this.showText = !this.showText;
       this.blinkTimer = 0;
+    }
+
+    if (this.lastInputTime > 0) {
+      this.lastInputTime -= dt;
     }
   }
 
@@ -42,10 +55,32 @@ export class TitleState extends BaseState {
     if (this.showText) {
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 20px monospace';
-      ctx.fillText('INSERT COIN', centerX, centerY + 60);
-      ctx.font = '16px monospace';
-      ctx.fillText('PRESS SPACE OR TAP TO START', centerX, centerY + 100);
+      ctx.fillText('INSERT COIN', centerX, centerY + 40);
     }
+
+    // Menu options
+    const startY = centerY + 90;
+    const optionsY = centerY + 130;
+
+    // Start button
+    if (this.selectedOption === 0) {
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(centerX - 100, startY - 25, 200, 40);
+    }
+    ctx.fillStyle = this.selectedOption === 0 ? '#ffffff' : '#9966ff';
+    ctx.font = 'bold 18px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('START', centerX, startY);
+
+    // Options button
+    if (this.selectedOption === 1) {
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(centerX - 100, optionsY - 25, 200, 40);
+    }
+    ctx.fillStyle = this.selectedOption === 1 ? '#ffffff' : '#9966ff';
+    ctx.fillText('OPTIONS', centerX, optionsY);
 
     ctx.fillStyle = '#666666';
     ctx.font = '12px monospace';
@@ -55,20 +90,45 @@ export class TitleState extends BaseState {
   }
 
   handleInput(inputState) {
-    if (!inputState.attack) {
+    if (!inputState.attack && !inputState.up && !inputState.down) {
       this.inputBlocked = false;
     }
 
-    if (inputState.attack && !this.inputDetected && !this.inputBlocked) {
+    // First interaction - resume audio
+    if (!this.inputDetected && (inputState.attack || inputState.up || inputState.down)) {
       this.inputDetected = true;
-
-      // Resume audio context and start music on first user interaction
       this.game.audioManager.resumeAudioContext();
       this.game.audioManager.playMusic('title');
+    }
+
+    if (this.lastInputTime > 0 || this.inputBlocked) return;
+
+    // Navigate menu
+    if (inputState.up && this.selectedOption > 0) {
+      this.selectedOption--;
+      this.lastInputTime = 200;
+      this.game.audioManager.playUISound();
+    } else if (inputState.down && this.selectedOption < 1) {
+      this.selectedOption++;
+      this.lastInputTime = 200;
+      this.game.audioManager.playUISound();
+    }
+
+    // Confirm selection
+    if (inputState.attack) {
       this.game.audioManager.playSelectSound();
 
-      const tutorialState = new TutorialState(this.game);
-      this.game.changeState(tutorialState);
+      if (this.selectedOption === 0) {
+        // Start game
+        const tutorialState = new TutorialState(this.game);
+        this.game.changeState(tutorialState);
+      } else if (this.selectedOption === 1) {
+        // Open options
+        const optionsState = new OptionsState(this.game);
+        this.game.changeState(optionsState);
+      }
+
+      this.lastInputTime = 300;
     }
   }
 }
