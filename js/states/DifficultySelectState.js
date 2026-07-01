@@ -1,5 +1,6 @@
 import { BaseState } from './BaseState.js';
 import { PlayState } from './PlayState.js';
+import { CHARACTERS } from '../data/characters.js';
 
 export class DifficultySelectState extends BaseState {
   constructor(game, characterData) {
@@ -109,7 +110,22 @@ export class DifficultySelectState extends BaseState {
     } else if (inputState.attack && this.confirmTimer <= 0) {
       this.confirmTimer = 300;
       const selectedDifficulty = this.difficulties[this.selectedIndex];
-      const playState = new PlayState(this.game, this.characterData, selectedDifficulty);
+
+      const characterOrder = [this.characterData];
+      CHARACTERS.forEach(char => {
+        if (char.name !== this.characterData.name) {
+          characterOrder.push(char);
+        }
+      });
+
+      const playState = new PlayState(
+        this.game,
+        this.characterData,
+        selectedDifficulty,
+        'story',
+        1,
+        characterOrder
+      );
       this.game.changeState(playState);
     }
   }

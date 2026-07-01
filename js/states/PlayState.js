@@ -1,4 +1,5 @@
 import { BaseState } from './BaseState.js';
+import { CharacterSelectState } from './CharacterSelectState.js';
 import { Player } from '../entities/Player.js';
 import { EnemySpawner } from '../entities/EnemySpawner.js';
 import { Projectile } from '../entities/Projectile.js';
@@ -8,8 +9,12 @@ import { Renderer } from '../core/Renderer.js';
 import { CONFIG } from '../config.js';
 
 export class PlayState extends BaseState {
-  constructor(game, characterData, difficulty) {
+  constructor(game, characterData, difficulty, mode = 'story', currentLevel = 1, allCharacters = null) {
     super(game);
+    this.mode = mode;
+    this.currentLevel = currentLevel;
+    this.allCharacters = allCharacters;
+
     this.characterData = characterData;
     this.difficulty = difficulty;
     this.difficultyConfig = CONFIG.DIFFICULTY[difficulty.toUpperCase()];
@@ -26,6 +31,9 @@ export class PlayState extends BaseState {
     this.comboTimeout = 3000;
 
     this.gameOver = false;
+    this.levelComplete = false;
+    this.enemiesDefeated = 0;
+    this.enemiesNeededForLevel = 20;
   }
 
   enter() {
@@ -83,6 +91,10 @@ export class PlayState extends BaseState {
 
     if (this.player.health <= 0) {
       this.gameOver = true;
+    }
+
+    if (this.mode === 'story' && this.enemiesDefeated >= this.enemiesNeededForLevel && !this.levelComplete) {
+      this.levelComplete = true;
     }
   }
 
@@ -148,6 +160,7 @@ export class PlayState extends BaseState {
     this.addScore(100);
     this.combo++;
     this.comboTimer = this.comboTimeout;
+    this.enemiesDefeated++;
 
     if (enemy.shouldDropHealthPill()) {
       const pill = new HealthPill(
@@ -194,14 +207,72 @@ export class PlayState extends BaseState {
 
     Renderer.renderUI(ctx, this.player, this.score, this.combo);
 
+    if (this.mode === 'story') {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '16px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`LEVEL ${this.currentLevel}/3`, 780, 50);
+      ctx.fillText(`ENEMIES: ${this.enemiesDefeated}/${this.enemiesNeededForLevel}`, 780, 70);
+    }
+
+    if (this.levelComplete) {
+      this.renderLevelComplete(ctx);
+    }
+
     if (this.gameOver) {
       Renderer.renderGameOver(ctx);
     }
   }
 
+  renderLevelComplete(ctx) {
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    ctx.fillStyle = '#00ff00';
+    ctx.font = 'bold 48px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('LEVEL COMPLETE!', centerX, centerY - 40);
+
+    if (this.currentLevel < 3) {
+      const nextCharacter = this.allCharacters[this.currentLevel];
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '24px monospace';
+      ctx.fillText(`Next: ${nextCharacter.name.toUpperCase()}`, centerX, centerY + 20);
+    } else {
+      ctx.fillStyle = '#ff1493';
+      ctx.font = '24px monospace';
+      ctx.fillText('BOSS FIGHT NEXT!', centerX, centerY + 20);
+    }
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '20px monospace';
+    ctx.fillText('Press SPACE or TAP to continue', centerX, centerY + 60);
+  }
+
   handleInput(inputState) {
     if (this.gameOver && inputState.attack) {
-      this.enter();
+      const characterSelectState = new CharacterSelectState(this.game);
+      this.game.changeState(characterSelectState);
+    } else if (this.levelComplete && inputState.attack) {
+      if (this.currentLevel < 3) {
+        const nextCharacter = this.allCharacters[this.currentLevel];
+        const nextLevel = this.currentLevel + 1;
+        const nextPlayState = new PlayState(
+          this.game,
+          nextCharacter,
+          this.difficulty,
+          this.mode,
+          nextLevel,
+          this.allCharacters
+        );
+        this.game.changeState(nextPlayState);
+      } else {
+        const characterSelectState = new CharacterSelectState(this.game);
+        this.game.changeState(characterSelectState);
+      }
     }
   }
 }
