@@ -54,12 +54,12 @@ SPRITE_QUEUE = [
 
 **Color palette**: Purple (#9966ff), gold accents, white/cream for clothing""",
         "dims": (128, 128), "frames": 1, "frame_size": (128, 128), "dir": "sprites/characters/rumi"},
-    {"name": "zoey_idle", "prompt": """### Character 2: Zoey (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+    {"name": "zoey_idle", "prompt": """### Character 3: Zoey (Blue Hunter)
+**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `zoey_idle.png` | 128×48px | 4 frames @ 32×48px | Ready stance, knife visible |
+| `zoey_idle.png` | 128×48px | 4 frames @ 32×48px | Fighting stance, hands ready |
 
 ### Format
 - **File type**: PNG with transparency
@@ -67,14 +67,14 @@ SPRITE_QUEUE = [
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 - **Layout**: Horizontal spritesheet (frames side-by-side)
 
-**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
+**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (128, 48), "frames": 4, "frame_size": (32, 48), "dir": "sprites/characters/zoey"},
-    {"name": "zoey_walk", "prompt": """### Character 2: Zoey (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+    {"name": "zoey_walk", "prompt": """### Character 3: Zoey (Blue Hunter)
+**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `zoey_walk.png` | 192×48px | 6 frames @ 32×48px | Walking animation |
+| `zoey_walk.png` | 192×48px | 6 frames @ 32×48px | Quick step animation |
 
 ### Format
 - **File type**: PNG with transparency
@@ -82,14 +82,14 @@ SPRITE_QUEUE = [
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 - **Layout**: Horizontal spritesheet (frames side-by-side)
 
-**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
+**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (192, 48), "frames": 6, "frame_size": (32, 48), "dir": "sprites/characters/zoey"},
-    {"name": "zoey_attack", "prompt": """### Character 2: Zoey (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+    {"name": "zoey_attack", "prompt": """### Character 3: Zoey (Blue Hunter)
+**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `zoey_attack.png` | 240×48px | 5 frames @ 48×48px | Throwing knife wind-up and release |
+| `zoey_attack.png` | 240×48px | 5 frames @ 48×48px | Punch/kick combo |
 
 ### Format
 - **File type**: PNG with transparency
@@ -97,10 +97,10 @@ SPRITE_QUEUE = [
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 - **Layout**: Horizontal spritesheet (frames side-by-side)
 
-**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
+**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (240, 48), "frames": 5, "frame_size": (48, 48), "dir": "sprites/characters/zoey"},
-    {"name": "zoey_hit", "prompt": """### Character 2: Zoey (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+    {"name": "zoey_hit", "prompt": """### Character 3: Zoey (Blue Hunter)
+**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -112,10 +112,10 @@ SPRITE_QUEUE = [
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 - **Layout**: Horizontal spritesheet (frames side-by-side)
 
-**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
+**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (96, 48), "frames": 3, "frame_size": (32, 48), "dir": "sprites/characters/zoey"},
-    {"name": "zoey_portrait", "prompt": """### Character 2: Zoey (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+    {"name": "zoey_portrait", "prompt": """### Character 3: Zoey (Blue Hunter)
+**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -126,14 +126,14 @@ SPRITE_QUEUE = [
 - **Color mode**: Indexed color (256 colors max)
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 
-**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
+**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (128, 128), "frames": 1, "frame_size": (128, 128), "dir": "sprites/characters/zoey"},
-    {"name": "mira_idle", "prompt": """### Character 3: Mira (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+    {"name": "mira_idle", "prompt": """### Character 2: Mira (Red/Pink Hunter)
+**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `mira_idle.png` | 128×48px | 4 frames @ 32×48px | Fighting stance, hands ready |
+| `mira_idle.png` | 128×48px | 4 frames @ 32×48px | Ready stance, knife visible |
 
 ### Format
 - **File type**: PNG with transparency
@@ -141,14 +141,14 @@ SPRITE_QUEUE = [
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 - **Layout**: Horizontal spritesheet (frames side-by-side)
 
-**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
+**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
         "dims": (128, 48), "frames": 4, "frame_size": (32, 48), "dir": "sprites/characters/mira"},
-    {"name": "mira_walk", "prompt": """### Character 3: Mira (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+    {"name": "mira_walk", "prompt": """### Character 2: Mira (Red/Pink Hunter)
+**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `mira_walk.png` | 192×48px | 6 frames @ 32×48px | Quick step animation |
+| `mira_walk.png` | 192×48px | 6 frames @ 32×48px | Walking animation |
 
 ### Format
 - **File type**: PNG with transparency
@@ -156,14 +156,14 @@ SPRITE_QUEUE = [
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 - **Layout**: Horizontal spritesheet (frames side-by-side)
 
-**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
+**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
         "dims": (192, 48), "frames": 6, "frame_size": (32, 48), "dir": "sprites/characters/mira"},
-    {"name": "mira_attack", "prompt": """### Character 3: Mira (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+    {"name": "mira_attack", "prompt": """### Character 2: Mira (Red/Pink Hunter)
+**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `mira_attack.png` | 240×48px | 5 frames @ 48×48px | Punch/kick combo |
+| `mira_attack.png` | 240×48px | 5 frames @ 48×48px | Throwing knife wind-up and release |
 
 ### Format
 - **File type**: PNG with transparency
@@ -171,10 +171,10 @@ SPRITE_QUEUE = [
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 - **Layout**: Horizontal spritesheet (frames side-by-side)
 
-**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
+**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
         "dims": (240, 48), "frames": 5, "frame_size": (48, 48), "dir": "sprites/characters/mira"},
-    {"name": "mira_hit", "prompt": """### Character 3: Mira (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+    {"name": "mira_hit", "prompt": """### Character 2: Mira (Red/Pink Hunter)
+**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -186,10 +186,10 @@ SPRITE_QUEUE = [
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 - **Layout**: Horizontal spritesheet (frames side-by-side)
 
-**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
+**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
         "dims": (96, 48), "frames": 3, "frame_size": (32, 48), "dir": "sprites/characters/mira"},
-    {"name": "mira_portrait", "prompt": """### Character 3: Mira (Blue Hunter)
-**Theme**: Fast attacker, martial arts, blue/cyan/white color scheme
+    {"name": "mira_portrait", "prompt": """### Character 2: Mira (Red/Pink Hunter)
+**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -200,7 +200,7 @@ SPRITE_QUEUE = [
 - **Color mode**: Indexed color (256 colors max)
 - **Style**: 8-bit pixel art, clean pixels (no anti-aliasing)
 
-**Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
+**Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
         "dims": (128, 128), "frames": 1, "frame_size": (128, 128), "dir": "sprites/characters/mira"}
 ]
 
