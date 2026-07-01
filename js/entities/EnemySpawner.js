@@ -31,7 +31,8 @@ export class EnemySpawner {
         CONFIG.ENEMY_SPAWN_X,
         Math.random() * 250 + 100,
         this.getEnemyType(),
-        this.difficultyConfig
+        this.difficultyConfig,
+        this.difficulty
       );
 
       return enemy;

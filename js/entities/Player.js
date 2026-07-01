@@ -62,6 +62,11 @@ export class Player extends Entity {
     this.isAttacking = true;
     this.attackTimer = 0;
     this.attackCooldown = CONFIG.ATTACK_COOLDOWN;
+
+    if (this.characterType === 'mira') {
+      return { type: 'projectile' };
+    }
+
     return this.getAttackBox();
   }
 
@@ -78,6 +83,10 @@ export class Player extends Entity {
     };
   }
 
+  heal(amount) {
+    this.health = Math.min(this.health + amount, this.maxHealth);
+  }
+
   render(ctx) {
     if (!this.active) return;
 
@@ -91,7 +100,9 @@ export class Player extends Entity {
     if (this.isAttacking && this.characterType !== 'mira') {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
       const attackBox = this.getAttackBox();
-      ctx.fillRect(attackBox.x, attackBox.y, attackBox.width, attackBox.height);
+      if (attackBox) {
+        ctx.fillRect(attackBox.x, attackBox.y, attackBox.width, attackBox.height);
+      }
     }
   }
 }

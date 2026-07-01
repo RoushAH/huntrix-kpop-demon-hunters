@@ -1,4 +1,4 @@
-const CACHE_NAME = 'huntrix-v2';
+const CACHE_NAME = 'huntrix-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -13,8 +13,12 @@ const ASSETS_TO_CACHE = [
   '/js/entities/Player.js',
   '/js/entities/Enemy.js',
   '/js/entities/EnemySpawner.js',
+  '/js/entities/Projectile.js',
+  '/js/entities/HealthPill.js',
   '/js/states/BaseState.js',
   '/js/states/TitleState.js',
+  '/js/states/CharacterSelectState.js',
+  '/js/states/DifficultySelectState.js',
   '/js/states/PlayState.js',
   '/js/data/characters.js',
   '/js/utils/Vector2.js',

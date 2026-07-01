@@ -8,27 +8,18 @@ def generate_image(prompt, output_path="test_output.png"):
 
     bedrock = boto3.client(
         service_name='bedrock-runtime',
-        region_name='us-east-1'
+        region_name='us-west-2'
     )
 
-    # Nova Canvas request format
+    # Stable Image Ultra request format
     request_body = {
-        "taskType": "TEXT_IMAGE",
-        "textToImageParams": {
-            "text": prompt
-        },
-        "imageGenerationConfig": {
-            "numberOfImages": 1,
-            "quality": "standard",  # or "premium"
-            "height": 1024,
-            "width": 1024,
-            "cfgScale": 8.0,
-            "seed": 42
-        }
+        "prompt": prompt,
+        "aspect_ratio": "1:1",
+        "output_format": "png"
     }
 
     response = bedrock.invoke_model(
-        modelId='amazon.nova-canvas-v1:0',
+        modelId='stability.stable-image-ultra-v1:1',
         body=json.dumps(request_body),
         contentType='application/json',
         accept='application/json'
@@ -37,11 +28,20 @@ def generate_image(prompt, output_path="test_output.png"):
     response_body = json.loads(response['body'].read())
 
     # Extract and save the image
+    print("Response keys:", list(response_body.keys()))
+
     if 'images' in response_body and len(response_body['images']) > 0:
         image_data = base64.b64decode(response_body['images'][0])
         with open(output_path, 'wb') as f:
             f.write(image_data)
-        print(f"✓ Image saved to {output_path}")
+        print(f"SUCCESS: Image saved to {output_path}")
+        return output_path
+    elif 'image' in response_body:
+        # Single image field
+        image_data = base64.b64decode(response_body['image'])
+        with open(output_path, 'wb') as f:
+            f.write(image_data)
+        print(f"SUCCESS: Image saved to {output_path}")
         return output_path
     else:
         print("Error: No image in response")
@@ -54,5 +54,5 @@ if __name__ == "__main__":
 
     output = generate_image(prompt, "bedrock_test.png")
     if output:
-        print(f"\n✓ Successfully generated image from prompt:")
+        print(f"\nSUCCESS: Successfully generated image from prompt:")
         print(f"  '{prompt}'")

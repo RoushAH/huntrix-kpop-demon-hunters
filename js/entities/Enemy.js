@@ -2,7 +2,7 @@ import { Entity } from './Entity.js';
 import { CONFIG } from '../config.js';
 
 export class Enemy extends Entity {
-  constructor(x, y, type = 'basic', difficultyConfig) {
+  constructor(x, y, type = 'basic', difficultyConfig, difficulty = 'easy') {
     const sizes = {
       basic: { width: 32, height: 48 },
       fast: { width: 24, height: 40 },
@@ -14,6 +14,7 @@ export class Enemy extends Entity {
 
     this.type = type;
     this.difficultyConfig = difficultyConfig;
+    this.difficulty = difficulty;
 
     const baseStats = {
       basic: { health: 30, speed: 80, damage: 10 },
@@ -37,6 +38,12 @@ export class Enemy extends Entity {
       tank: '#660000'
     };
     this.color = this.colors[type] || this.colors.basic;
+
+    this.healthPillDropChance = difficulty === 'easy' ? 0.2 : 0.1;
+  }
+
+  shouldDropHealthPill() {
+    return Math.random() < this.healthPillDropChance;
   }
 
   update(dt, target) {
