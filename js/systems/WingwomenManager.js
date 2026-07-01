@@ -23,6 +23,7 @@ export class WingwomenManager {
       .map(c => {
         const companion = new Player(c, 50, 200);
         companion.isAI = true;
+        companion.isEntering = false;
         companion.aiController = new AIController(companion);
         console.log('Created companion:', companion.name);
         return companion;
@@ -60,7 +61,18 @@ export class WingwomenManager {
 
     if (this.active) {
       this.companions.forEach(companion => {
-        companion.aiController.update(dt, enemies);
+        if (companion.isEntering) {
+          // Still running in from left
+          if (companion.position.x >= 80) {
+            // Made it on screen, switch to AI control
+            companion.isEntering = false;
+            companion.velocity.x = 0;
+            companion.velocity.y = 0;
+          }
+        } else {
+          // Use AI control
+          companion.aiController.update(dt, enemies);
+        }
         companion.update(dt);
       });
     }
@@ -73,10 +85,12 @@ export class WingwomenManager {
     // Start off-screen left and run in
     this.companions[0].position.set(-50, baseY - 30);
     this.companions[0].velocity.x = 200; // Run in from left
+    this.companions[0].isEntering = true;
 
     if (this.companions[1]) {
       this.companions[1].position.set(-50, baseY + 30);
       this.companions[1].velocity.x = 200; // Run in from left
+      this.companions[1].isEntering = true;
     }
   }
 
