@@ -5,10 +5,13 @@ export class AIController {
     this.companions = companions;
     this.state = 'follow';
     this.target = null;
-    this.attackRange = 50;
     this.followDistance = 80;
     this.engageDistance = 600;
     this.assignedZone = null; // 'top', 'bottom', or null for ranged
+  }
+
+  get attackRange() {
+    return this.entity.attackRange; // Use entity's actual attack range
   }
 
   update(dt, enemies) {
