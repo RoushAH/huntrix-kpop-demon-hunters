@@ -74,7 +74,7 @@ export class AIController {
   }
 
   handleRangedBehavior(targetEnemy, distance) {
-    const optimalDistance = 250; // Mira wants to stay ~250px away
+    const optimalDistance = 200; // Mira wants to stay ~200px away (closer to action)
 
     if (distance < this.attackRange && this.entity.attackCooldown <= 0 && !this.entity.isAttacking) {
       // In range, attack
@@ -83,7 +83,7 @@ export class AIController {
       this.entity.velocity.y = 0;
       this.entity.attack();
     } else if (distance < optimalDistance * 0.6) {
-      // Too close, back away
+      // Too close, back away (< 120px)
       this.state = 'retreat';
       const awayDirection = this.entity.position.clone().subtract(targetEnemy.position).normalize();
       this.entity.velocity = awayDirection.multiply(this.entity.baseSpeed * 0.8);
@@ -125,8 +125,8 @@ export class AIController {
     this.state = 'position';
 
     if (!this.assignedZone) {
-      // Ranged character, stay back left
-      const targetX = 150;
+      // Ranged character, position more aggressively forward
+      const targetX = 200; // Was 150, now 200
       const targetY = 225;
       this.moveTowards(targetX, targetY);
     } else {
