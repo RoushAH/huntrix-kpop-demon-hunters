@@ -1,5 +1,6 @@
 import { BaseState } from './BaseState.js';
 import { CharacterSelectState } from './CharacterSelectState.js';
+import { BossCharacterSelectState } from './BossCharacterSelectState.js';
 import { GameOverState } from './GameOverState.js';
 import { InitialsEntryState } from './InitialsEntryState.js';
 import { Player } from '../entities/Player.js';
@@ -39,6 +40,7 @@ export class PlayState extends BaseState {
     this.inputBlocked = false;
     this.enemiesDefeated = 0;
     this.enemiesNeededForLevel = 50;
+    this.healthPacksSkipped = 0; // Track health packs picked up at full health
   }
 
   enter() {
@@ -174,7 +176,7 @@ export class PlayState extends BaseState {
       if (player.justAttacked) {
         this.game.audioManager.playAttackSound(player.characterType);
 
-        if (player.characterType === 'mira') {
+        if (player.characterType === 'zoey') { // Zoey throws knives
           const projectile = new Projectile(
             player.position.x + player.size.x,
             player.position.y + player.size.y / 2 - 8,
@@ -188,7 +190,7 @@ export class PlayState extends BaseState {
     // Check melee attacks
     allPlayers.forEach(player => {
       if (!player.active || !player.isAttacking) return;
-      if (player.characterType === 'mira') return; // Mira doesn't do melee
+      if (player.characterType === 'zoey') return; // Zoey doesn't do melee
 
       const attackBox = player.getAttackBox();
       if (attackBox) {
@@ -227,7 +229,17 @@ export class PlayState extends BaseState {
         const healAmount = this.difficulty === 'easy'
           ? this.player.maxHealth * 0.3
           : this.player.maxHealth * 0.2;
-        this.player.heal(healAmount);
+
+        const wasAtFullHealth = this.player.heal(healAmount);
+
+        if (wasAtFullHealth) {
+          // Player didn't need healing - award bonus points
+          this.healthPacksSkipped++;
+          const bonusPoints = this.healthPacksSkipped * 10;
+          this.scoreManager.addPoints(bonusPoints);
+          console.log(`Health pack skipped bonus: ${bonusPoints} points (${this.healthPacksSkipped}nth pack)`);
+        }
+
         pill.active = false;
         this.game.audioManager.playHealthPickupSound();
       }
@@ -389,8 +401,14 @@ export class PlayState extends BaseState {
         );
         this.game.changeState(nextPlayState);
       } else {
-        const characterSelectState = new CharacterSelectState(this.game);
-        this.game.changeState(characterSelectState);
+        // Level 3 complete - go to boss character select
+        const bossCharSelectState = new BossCharacterSelectState(
+          this.game,
+          this.difficulty,
+          this.scoreManager,
+          this.allCharacters
+        );
+        this.game.changeState(bossCharSelectState);
       }
     }
   }

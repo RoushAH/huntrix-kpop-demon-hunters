@@ -23,6 +23,9 @@ export class Player extends Entity {
 
     this.characterType = characterData.type;
     this.color = characterData.color;
+
+    // Boss fight freeze mechanic
+    this.freezeTimer = 0;
   }
 
   update(dt) {
@@ -72,7 +75,7 @@ export class Player extends Entity {
   }
 
   getAttackBox() {
-    if (this.characterType === 'mira') {
+    if (this.characterType === 'zoey') { // Zoey is ranged, no melee box
       return null;
     }
 
@@ -85,7 +88,12 @@ export class Player extends Entity {
   }
 
   heal(amount) {
+    const oldHealth = this.health;
     this.health = Math.min(this.health + amount, this.maxHealth);
+    const actualHealed = this.health - oldHealth;
+
+    // Return true if we didn't heal (already at full health)
+    return actualHealed === 0;
   }
 
   render(ctx) {

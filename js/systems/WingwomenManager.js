@@ -117,4 +117,11 @@ export class WingwomenManager {
     this.active = false;
     this.timer = this.offDuration;
   }
+
+  forceActive() {
+    // Keep companions active permanently (for boss fight)
+    this.active = true;
+    this.timer = 999999999; // Effectively infinite
+    this.resetCompanionPositions();
+  }
 }

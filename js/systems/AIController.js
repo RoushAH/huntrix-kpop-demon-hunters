@@ -51,8 +51,8 @@ export class AIController {
       }
     }
 
-    // Zoey: Proactive - patrols the open side when no enemies
-    if (this.entity.characterType === 'zoey') {
+    // Mira: Proactive - patrols the open side when no enemies
+    if (this.entity.characterType === 'mira') {
       const openSide = this.findOpenSide(enemies);
       if (openSide) {
         this.state = 'patrol';
@@ -96,7 +96,7 @@ export class AIController {
   }
 
   updateZoneAssignment() {
-    // Mira (ranged) doesn't need a zone
+    // Zoey (ranged) doesn't need a zone
     if (this.entity.attackRange > 100) {
       this.assignedZone = null;
       return;

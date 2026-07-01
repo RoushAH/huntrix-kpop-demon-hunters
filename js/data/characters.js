@@ -12,20 +12,21 @@ export const CHARACTERS = [
   {
     name: 'Mira',
     type: 'mira',
-    str: 4,
-    spd: 3,
-    vocalRange: 5,
-    attackRange: 300,
+    str: 3,
+    spd: 5,
+    vocalRange: 4,
+    attackRange: 50,
     color: '#ff1493',
-    description: 'Ranged attacker with throwing knives'
+    description: 'Fast melee fighter'
   },
   {
     name: 'Zoey',
     type: 'zoey',
-    str: 3,
-    spd: 5,
-    vocalRange: 4,
+    str: 4,
+    spd: 3,
+    vocalRange: 5,
+    attackRange: 300,
     color: '#00bfff',
-    description: 'Fast melee fighter'
+    description: 'Ranged attacker with throwing knives'
   }
 ];

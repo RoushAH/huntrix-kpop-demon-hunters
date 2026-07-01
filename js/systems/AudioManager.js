@@ -23,6 +23,7 @@ export class AudioManager {
     this.pendingTrack = null;
 
     this.currentTrack = null;
+    this.currentTrackPath = null; // Track the actual file path, not just the track name
     this.midiLoaded = false;
     this.isPlayingMusic = false;
     this.currentMelody = null;
@@ -82,12 +83,18 @@ export class AudioManager {
   playMusic(trackName) {
     if (!this.musicEnabled) return;
 
-    if (this.currentTrack === trackName) return; // Already playing
+    const trackPath = this.tracks[trackName];
+
+    // Check if already playing the same FILE (not just same track name)
+    if (this.currentTrackPath === trackPath && this.midiPlayer && this.midiPlayer.isPlaying()) {
+      console.log('AudioManager: Already playing this file, continuing:', trackPath);
+      return;
+    }
 
     this.stopMusic();
     this.currentTrack = trackName;
+    this.currentTrackPath = trackPath;
 
-    const trackPath = this.tracks[trackName];
     console.log('AudioManager: Playing music track:', trackName, trackPath);
 
     // Try to load audio file
@@ -110,12 +117,16 @@ export class AudioManager {
         .then(arrayBuffer => {
           console.log('AudioManager: ✓ MIDI file fetched, loading...');
           this.midiPlayer.loadArrayBuffer(arrayBuffer);
+
+          // Set tempo to 130% (1.3x speed)
+          this.midiPlayer.tempo = 130;
+
           this.midiPlayer.on('endOfFile', () => {
             // Loop the music
             this.midiPlayer.play();
           });
           this.midiPlayer.play();
-          console.log('AudioManager: ✓ MIDI playback started');
+          console.log('AudioManager: ✓ MIDI playback started at 140% tempo');
         })
         .catch(err => {
           console.error('AudioManager: ✗ MIDI load failed:', err);
@@ -150,6 +161,7 @@ export class AudioManager {
     }
 
     this.currentTrack = null;
+    this.currentTrackPath = null;
   }
 
   setMusicVolume(volume) {
@@ -204,9 +216,9 @@ export class AudioManager {
 
   // Specific sound effect methods
   playAttackSound(characterType) {
-    if (characterType === 'mira') {
+    if (characterType === 'zoey') {
       this.playSFX('attack', 880, 0.05); // High pitch for knife throw
-    } else if (characterType === 'zoey') {
+    } else if (characterType === 'mira') {
       this.playSFX('attack', 660, 0.08); // Fast attack
     } else {
       this.playSFX('attack', 440, 0.1); // Normal attack
