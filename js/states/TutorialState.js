@@ -116,7 +116,7 @@ export class TutorialState extends BaseState {
     }
   }
 
-  renderTouchInstructions(ctx, centerX, centerY) {
+  renderTouchInstructions(ctx, centerX, centerY, images) {
     const leftCol = centerX - 200;
     const rightCol = centerX + 200;
     const topRow = centerY - 40;
@@ -128,8 +128,16 @@ export class TutorialState extends BaseState {
     ctx.textAlign = 'center';
     ctx.fillText('MOVE', leftCol, topRow - 40);
 
-    // Drag gesture
-    this.drawDragGesture(ctx, leftCol, topRow, this.animFrame);
+    // Drag gesture - use sprite if available
+    const dragGesture = images['tutorial_drag_gesture'];
+    if (dragGesture && dragGesture.complete) {
+      // 3-frame animation: 192×64px = 64×64px per frame
+      const frameWidth = 64;
+      const frameX = this.animFrame * frameWidth;
+      ctx.drawImage(dragGesture, frameX, 0, frameWidth, 64, leftCol - 32, topRow - 32, 64, 64);
+    } else {
+      this.drawDragGesture(ctx, leftCol, topRow, this.animFrame);
+    }
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
@@ -140,8 +148,16 @@ export class TutorialState extends BaseState {
     ctx.font = 'bold 24px monospace';
     ctx.fillText('ATTACK', rightCol, topRow - 60);
 
-    // Tap gesture
-    this.drawTapGesture(ctx, rightCol, topRow, this.animFrame);
+    // Tap gesture - use sprite if available
+    const tapGesture = images['tutorial_tap_gesture'];
+    if (tapGesture && tapGesture.complete) {
+      // 3-frame animation: 192×64px = 64×64px per frame
+      const frameWidth = 64;
+      const frameX = this.animFrame * frameWidth;
+      ctx.drawImage(tapGesture, frameX, 0, frameWidth, 64, rightCol - 32, topRow - 32, 64, 64);
+    } else {
+      this.drawTapGesture(ctx, rightCol, topRow, this.animFrame);
+    }
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
@@ -152,8 +168,13 @@ export class TutorialState extends BaseState {
     ctx.font = 'bold 20px monospace';
     ctx.fillText('DEFEAT ALL DEMONS!', centerX, bottomRow + 40);
 
-    // Enemy icon
-    this.drawEnemyIcon(ctx, centerX, bottomRow + 80);
+    // Enemy icon - use sprite if available
+    const enemyIcon = images['tutorial_enemy_icon'];
+    if (enemyIcon && enemyIcon.complete) {
+      ctx.drawImage(enemyIcon, centerX - 16, bottomRow + 64, 32, 32);
+    } else {
+      this.drawEnemyIcon(ctx, centerX, bottomRow + 80);
+    }
   }
 
   drawArrowKeys(ctx, x, y) {
