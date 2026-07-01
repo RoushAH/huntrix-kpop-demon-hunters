@@ -5,8 +5,8 @@ export class Renderer {
     // Parallax speeds: layer 1 (far) slowest, layer 3 (near) fastest
     const parallaxSpeeds = [0.2, 0.5, 1.0];
 
-    // Render 3 parallax layers
-    for (let i = 1; i <= 3; i++) {
+    // Render only layers 1 and 2 (layer 3 has no transparency)
+    for (let i = 1; i <= 2; i++) {
       const bgKey = `bg_${levelKey}_layer${i}`;
       const bg = images[bgKey];
 
