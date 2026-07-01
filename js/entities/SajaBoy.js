@@ -14,22 +14,23 @@ export class SajaBoy extends Entity {
     const baseSpeed = 80;
 
     // Type-specific modifications
+    // Art spec: Boy 1 = Red Tank, Boy 2 = Blue Freeze
     switch (boyType) {
-      case 'freeze':
-        this.maxHealth = baseHP;
-        this.speed = baseSpeed;
-        this.damage = 15;
-        this.color = '#0066ff'; // Blue
-        this.freezeProjectileCooldown = 0;
-        this.freezeProjectileInterval = 3000; // Shoot every 3 seconds
-        break;
-
       case 'tank':
         this.maxHealth = baseHP * 3; // Triple HP
         this.speed = baseSpeed * 0.5; // Half speed
         this.damage = 20;
-        this.color = '#cc0000'; // Red
+        this.color = '#cc0000'; // Red - Leader
         this.damageReduction = 0.5; // Takes half damage
+        break;
+
+      case 'freeze':
+        this.maxHealth = baseHP;
+        this.speed = baseSpeed;
+        this.damage = 15;
+        this.color = '#0066ff'; // Blue - Ice man
+        this.freezeProjectileCooldown = 0;
+        this.freezeProjectileInterval = 3000; // Shoot every 3 seconds
         break;
 
       case 'dodger':
@@ -75,6 +76,11 @@ export class SajaBoy extends Entity {
 
     // Always drop health pill
     this.healthPillDropChance = 1.0;
+
+    // For sprite rendering (artIndex set by BossState, 1-5)
+    this.artIndex = 0; // Will be set to 1-5 by BossState
+    this.spriteKey = null; // Will be set based on artIndex
+    this.useSprites = false; // Enable when sprites available
   }
 
   shouldDropHealthPill() {
@@ -195,10 +201,25 @@ export class SajaBoy extends Entity {
     this.turnDuration = duration;
   }
 
-  render(ctx) {
+  render(ctx, images) {
     if (!this.active) return;
 
-    // Draw Saja Boy
+    // Try to render sprite if available
+    if (images && this.artIndex > 0) {
+      const spriteKey = `saja_boy_${this.artIndex}_idle`;
+      const sprite = images[spriteKey];
+
+      if (sprite && sprite.complete) {
+        // For now just render idle, will add animations later
+        ctx.drawImage(sprite, this.position.x, this.position.y, this.size.x, this.size.y);
+        this.renderHealthBar(ctx);
+        this.renderTypeLabel(ctx);
+        this.renderEffects(ctx);
+        return;
+      }
+    }
+
+    // Fallback to colored rectangle
     ctx.fillStyle = this.color;
     ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
 
@@ -207,7 +228,12 @@ export class SajaBoy extends Entity {
     ctx.lineWidth = 3;
     ctx.strokeRect(this.position.x, this.position.y, this.size.x, this.size.y);
 
-    // Draw health bar
+    this.renderHealthBar(ctx);
+    this.renderTypeLabel(ctx);
+    this.renderEffects(ctx);
+  }
+
+  renderHealthBar(ctx) {
     const barWidth = this.size.x;
     const barHeight = 6;
     const barX = this.position.x;
@@ -219,14 +245,16 @@ export class SajaBoy extends Entity {
     const healthPercent = this.health / this.maxHealth;
     ctx.fillStyle = '#00ff00';
     ctx.fillRect(barX, barY, barWidth * healthPercent, barHeight);
+  }
 
-    // Draw type indicator
+  renderTypeLabel(ctx) {
     ctx.fillStyle = '#ffffff';
     ctx.font = '10px monospace';
     ctx.textAlign = 'center';
     ctx.fillText(this.boyType.toUpperCase(), this.position.x + this.size.x / 2, this.position.y + this.size.y / 2);
+  }
 
-    // Visual effects
+  renderEffects(ctx) {
     if (this.boyType === 'berserker' && this.health / this.maxHealth < 0.5) {
       // Red glow when berserking
       ctx.strokeStyle = '#ff0000';

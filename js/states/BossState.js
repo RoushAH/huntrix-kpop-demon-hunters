@@ -102,7 +102,8 @@ export class BossState extends BaseState {
 
   initSajaBoys() {
     // Create 5 Saja Boys spread across the right side
-    const boyTypes = ['freeze', 'tank', 'dodger', 'summoner', 'berserker'];
+    // Art spec: Boy 1 = Red Tank (leader), Boy 2 = Blue Freeze (ice), etc.
+    const boyTypes = ['tank', 'freeze', 'dodger', 'summoner', 'berserker'];
     const spacing = 100;
     const startX = 650;
     const startY = 150;
@@ -112,6 +113,7 @@ export class BossState extends BaseState {
       const y = startY + Math.floor(index / 2) * spacing;
 
       const boy = new SajaBoy(x, y, type, this.difficultyConfig, this.difficulty);
+      boy.artIndex = index + 1; // Art package uses 1-based indexing (1-5)
       this.sajaBoys.push(boy);
     });
 

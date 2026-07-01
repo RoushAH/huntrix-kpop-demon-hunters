@@ -89,6 +89,15 @@ export class AssetLoader {
       { key: 'demon_tank_walk', path: 'assets/sprites/enemies/tank/demon_tank_walk.png' },
       { key: 'demon_tank_attack', path: 'assets/sprites/enemies/tank/demon_tank_attack.png' },
       { key: 'demon_tank_death', path: 'assets/sprites/enemies/tank/demon_tank_death.png' },
+
+      // Saja Boy 1 (Red Tank - Leader)
+      { key: 'saja_boy_1_idle', path: 'assets/sprites/enemies/saja_boys/saja_boy_1_idle.png' },
+      { key: 'saja_boy_1_attack', path: 'assets/sprites/enemies/saja_boys/saja_boy_1_attack.png' },
+      { key: 'saja_boy_1_hit', path: 'assets/sprites/enemies/saja_boys/saja_boy_1_hit.png' },
+      { key: 'saja_boy_1_death', path: 'assets/sprites/enemies/saja_boys/saja_boy_1_death.png' },
+
+      // Saja Boy 2 (Blue Freeze - Ice man)
+      { key: 'saja_boy_2_idle', path: 'assets/sprites/enemies/saja_boys/saja_boy_2_idle.png' },
     ];
   }
 
