@@ -9,4 +9,4 @@ def zoom_for_preview(input_path, output_path, scale=8):
     print(f"Zoomed {w}x{h} to {zoomed.size} at {output_path}")
 
 if __name__ == "__main__":
-    zoom_for_preview("rumi_idle_pixelated.png", "rumi_idle_preview.png", scale=8)
+    zoom_for_preview("rumi_idle.png", "rumi_idle_preview.png", scale=8)

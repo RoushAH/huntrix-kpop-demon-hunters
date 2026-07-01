@@ -32,6 +32,9 @@ export class PlayState extends BaseState {
 
     this.gameOver = false;
     this.levelComplete = false;
+    this.levelCompleteTimer = 0;
+    this.levelCompleteDelay = 1500;
+    this.inputBlocked = false;
     this.enemiesDefeated = 0;
     this.enemiesNeededForLevel = 20;
   }
@@ -53,6 +56,11 @@ export class PlayState extends BaseState {
 
   update(dt) {
     if (this.gameOver) {
+      return;
+    }
+
+    if (this.levelComplete) {
+      this.levelCompleteTimer += dt;
       return;
     }
 
@@ -95,6 +103,8 @@ export class PlayState extends BaseState {
 
     if (this.mode === 'story' && this.enemiesDefeated >= this.enemiesNeededForLevel && !this.levelComplete) {
       this.levelComplete = true;
+      this.levelCompleteTimer = 0;
+      this.inputBlocked = true;
     }
   }
 
@@ -228,35 +238,62 @@ export class PlayState extends BaseState {
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    ctx.fillStyle = '#00ff00';
-    ctx.font = 'bold 48px monospace';
+    const pulse = Math.sin(this.levelCompleteTimer * 0.005) * 0.3 + 0.7;
+    ctx.save();
+    ctx.globalAlpha = pulse;
+
+    ctx.fillStyle = '#ffff00';
+    ctx.font = 'bold 64px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('LEVEL COMPLETE!', centerX, centerY - 40);
+    ctx.fillText(`LEVEL ${this.currentLevel} CLEAR!!!`, centerX, centerY - 60);
+
+    ctx.restore();
+
+    ctx.fillStyle = '#00ff00';
+    ctx.font = 'bold 32px monospace';
+    ctx.fillText(`SCORE: ${this.score}`, centerX, centerY);
 
     if (this.currentLevel < 3) {
       const nextCharacter = this.allCharacters[this.currentLevel];
+      ctx.fillStyle = nextCharacter.color;
+      ctx.font = 'bold 28px monospace';
+      ctx.fillText(`NEXT: ${nextCharacter.name.toUpperCase()}`, centerX, centerY + 50);
+
       ctx.fillStyle = '#ffffff';
-      ctx.font = '24px monospace';
-      ctx.fillText(`Next: ${nextCharacter.name.toUpperCase()}`, centerX, centerY + 20);
+      ctx.font = '16px monospace';
+      ctx.fillText(`STR ${this.renderHearts(nextCharacter.str)} SPD ${this.renderHearts(nextCharacter.spd)}`, centerX, centerY + 75);
     } else {
-      ctx.fillStyle = '#ff1493';
-      ctx.font = '24px monospace';
-      ctx.fillText('BOSS FIGHT NEXT!', centerX, centerY + 20);
+      ctx.fillStyle = '#ff0000';
+      ctx.font = 'bold 32px monospace';
+      ctx.fillText('BOSS FIGHT NEXT!', centerX, centerY + 50);
     }
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '20px monospace';
-    ctx.fillText('Press SPACE or TAP to continue', centerX, centerY + 60);
+    if (this.levelCompleteTimer >= this.levelCompleteDelay) {
+      const blinkRate = Math.floor(this.levelCompleteTimer / 300) % 2;
+      if (blinkRate === 0) {
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '20px monospace';
+        ctx.fillText('Press SPACE or TAP to continue', centerX, centerY + 110);
+      }
+    }
+  }
+
+  renderHearts(count) {
+    return '♥'.repeat(count);
   }
 
   handleInput(inputState) {
-    if (this.gameOver && inputState.attack) {
+    if (!inputState.attack) {
+      this.inputBlocked = false;
+    }
+
+    if (this.gameOver && inputState.attack && !this.inputBlocked) {
       const characterSelectState = new CharacterSelectState(this.game);
       this.game.changeState(characterSelectState);
-    } else if (this.levelComplete && inputState.attack) {
+    } else if (this.levelComplete && inputState.attack && !this.inputBlocked && this.levelCompleteTimer >= this.levelCompleteDelay) {
       if (this.currentLevel < 3) {
         const nextCharacter = this.allCharacters[this.currentLevel];
         const nextLevel = this.currentLevel + 1;
