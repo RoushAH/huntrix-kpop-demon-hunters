@@ -5,7 +5,7 @@ export class AIController {
     this.target = null;
     this.attackRange = 50;
     this.followDistance = 80;
-    this.engageDistance = 200;
+    this.engageDistance = 600;
   }
 
   update(dt, enemies) {

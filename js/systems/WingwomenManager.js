@@ -23,9 +23,16 @@ export class WingwomenManager {
       .map(c => {
         const companion = new Player(c, 50, 200);
         companion.isAI = true;
-        companion.baseSpeed = companion.baseSpeed * 0.6;
+
+        // Make companions much weaker
+        companion.baseSpeed = companion.baseSpeed * 0.5;
+        companion.attackDamage = companion.attackDamage * 0.4;
+        companion.attackCooldown = 600;
+
         companion.aiController = new AIController(companion);
-        console.log('Created companion:', companion.name, 'with speed:', companion.baseSpeed);
+        console.log('Created companion:', companion.name,
+          'speed:', companion.baseSpeed,
+          'damage:', companion.attackDamage);
         return companion;
       });
 
