@@ -15,6 +15,7 @@ export class EnemySpawner {
   }
 
   setSpawnRate(rate) {
+    console.log('Enemy spawn rate changed to:', rate, 'x');
     this.spawnRate = rate;
   }
 
@@ -26,6 +27,10 @@ export class EnemySpawner {
     if (this.spawnTimer >= interval) {
       this.spawnTimer = 0;
       this.enemiesSpawned++;
+
+      if (this.enemiesSpawned % 10 === 0) {
+        console.log('Spawned', this.enemiesSpawned, 'enemies. Current interval:', interval, 'ms (rate:', this.spawnRate, 'x)');
+      }
 
       const enemy = new Enemy(
         CONFIG.ENEMY_SPAWN_X,

@@ -70,15 +70,13 @@ export class WingwomenManager {
 
   resetCompanionPositions() {
     const baseY = this.playerCharacter.position.y;
-    this.companions[0].position.set(
-      this.playerCharacter.position.x - 60,
-      baseY - 30
-    );
+    // Start off-screen left and run in
+    this.companions[0].position.set(-50, baseY - 30);
+    this.companions[0].velocity.x = 200; // Run in from left
+
     if (this.companions[1]) {
-      this.companions[1].position.set(
-        this.playerCharacter.position.x - 60,
-        baseY + 30
-      );
+      this.companions[1].position.set(-50, baseY + 30);
+      this.companions[1].velocity.x = 200; // Run in from left
     }
   }
 

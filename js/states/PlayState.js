@@ -39,7 +39,7 @@ export class PlayState extends BaseState {
     this.levelCompleteDelay = 1500;
     this.inputBlocked = false;
     this.enemiesDefeated = 0;
-    this.enemiesNeededForLevel = 30;
+    this.enemiesNeededForLevel = 50;
   }
 
   enter() {
@@ -95,6 +95,7 @@ export class PlayState extends BaseState {
 
     const wingwomenEvent = this.wingwomenManager.update(dt, this.enemies);
     if (wingwomenEvent) {
+      console.log('Wingwomen event:', wingwomenEvent);
       this.enemySpawner.setSpawnRate(wingwomenEvent.newSpawnRate);
     }
 
