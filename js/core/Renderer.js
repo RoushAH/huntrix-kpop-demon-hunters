@@ -9,9 +9,8 @@ export class Renderer {
     // Parallax speeds: layer 1 (far) slowest, layer 3 (near) fastest
     const parallaxSpeeds = [0.2, 0.5, 1.0];
 
-    // Render only layer 1 - layer 2 and 3 don't have alpha channels (RGB not RGBA)
-    // They need to be regenerated with actual PNG transparency
-    for (let i = 1; i <= 1; i++) {
+    // Render all 3 parallax layers (now RGBA with transparency!)
+    for (let i = 1; i <= 3; i++) {
       const bgKey = `bg_${levelKey}_layer${i}`;
       const bg = images[bgKey];
 
