@@ -20,6 +20,7 @@ export class AIController {
 
     // Find the best enemy to target based on zone strategy
     const targetEnemy = this.findZoneTarget(enemies);
+    this.target = targetEnemy; // Track current target for companion coordination
 
     if (targetEnemy) {
       const distance = this.entity.position.distanceTo(targetEnemy.position);
@@ -32,6 +33,7 @@ export class AIController {
       }
     } else {
       // No enemies, move to zone position
+      this.target = null;
       this.moveToZonePosition();
     }
   }
@@ -167,11 +169,47 @@ export class AIController {
     });
 
     if (zoneEnemies.length > 0) {
-      return this.findNearestEnemy(zoneEnemies);
+      return this.findNearestEnemyAvoidingCompanions(zoneEnemies);
     }
 
-    // No enemies in zone, help with nearest enemy anywhere
+    // No enemies in zone, help with nearest enemy anywhere (but avoid doubling up)
+    return this.findNearestEnemyAvoidingCompanions(enemies);
+  }
+
+  findNearestEnemyAvoidingCompanions(enemies) {
+    // Check if other melee companions are targeting enemies
+    const otherMeleeTargets = this.companions
+      .filter(c => c !== this.entity && c.attackRange <= 100 && c.aiController)
+      .map(c => c.aiController.currentTarget)
+      .filter(t => t && t.active);
+
+    // First, try to find an enemy that no one else is targeting
+    let untargetedEnemy = null;
+    let minUntargetedDistance = Infinity;
+
+    enemies.forEach(enemy => {
+      if (!enemy.active) return;
+      const isBeingTargeted = otherMeleeTargets.some(target => target === enemy);
+      if (!isBeingTargeted) {
+        const distance = this.entity.position.distanceTo(enemy.position);
+        if (distance < minUntargetedDistance) {
+          minUntargetedDistance = distance;
+          untargetedEnemy = enemy;
+        }
+      }
+    });
+
+    // If we found an untargeted enemy, use it
+    if (untargetedEnemy) {
+      return untargetedEnemy;
+    }
+
+    // Otherwise, fall back to nearest enemy (all are being targeted)
     return this.findNearestEnemy(enemies);
+  }
+
+  get currentTarget() {
+    return this.target;
   }
 
   findNearestEnemy(enemies) {
