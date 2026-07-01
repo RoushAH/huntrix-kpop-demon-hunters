@@ -89,23 +89,32 @@ export class AudioManager {
     // Try MIDI.js first
     if (this.midiReady && typeof MIDI !== 'undefined') {
       console.log('AudioManager: Loading MIDI file:', path);
-      MIDI.Player.loadFile(path, () => {
-        console.log('AudioManager: MIDI file loaded, starting playback');
+      console.log('AudioManager: MIDI.Player:', MIDI.Player);
+
+      // Use absolute path
+      const absolutePath = window.location.origin + '/' + path;
+      console.log('AudioManager: Absolute path:', absolutePath);
+
+      MIDI.Player.loadFile(absolutePath, () => {
+        console.log('AudioManager: ✓ MIDI file loaded successfully, starting playback');
         MIDI.Player.loop = true;
         MIDI.Player.start();
         // Adjust volume
         MIDI.setVolume(0, this.musicVolume * 127);
+        console.log('AudioManager: ✓ MIDI playback started');
       }, (err) => {
-        console.warn('AudioManager: MIDI load failed', err);
+        console.error('AudioManager: ✗ MIDI load failed:', err);
+        console.log('AudioManager: Tried to load:', absolutePath);
         // Don't play synthesized music - just be silent
       });
     } else if (!this.midiReady && typeof MIDI !== 'undefined') {
       // MIDI.js not ready yet, queue for later
-      console.log('AudioManager: MIDI.js not ready yet, queuing track');
+      console.log('AudioManager: MIDI.js not ready yet, queuing track:', trackName);
       this.pendingTrack = trackName;
     } else {
       // MIDI.js not available, no music
-      console.log('AudioManager: MIDI.js not available, no music will play');
+      console.error('AudioManager: MIDI.js not available! MIDI object:', typeof MIDI);
+      console.log('AudioManager: No music will play');
     }
   }
 

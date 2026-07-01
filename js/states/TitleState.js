@@ -14,7 +14,7 @@ export class TitleState extends BaseState {
     this.showText = true;
     this.inputDetected = false;
     this.inputBlocked = false;
-    this.game.audioManager.playMusic('title');
+    // Don't start music until user interaction (browser autoplay policy)
   }
 
   update(dt) {
@@ -61,6 +61,10 @@ export class TitleState extends BaseState {
 
     if (inputState.attack && !this.inputDetected && !this.inputBlocked) {
       this.inputDetected = true;
+
+      // Resume audio context and start music on first user interaction
+      this.game.audioManager.resumeAudioContext();
+      this.game.audioManager.playMusic('title');
       this.game.audioManager.playSelectSound();
 
       const characterSelectState = new CharacterSelectState(this.game);

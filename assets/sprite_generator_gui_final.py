@@ -100,7 +100,7 @@ SPRITE_QUEUE = [
 **Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (240, 48), "frames": 5, "frame_size": (48, 48), "dir": "sprites/characters/zoey"},
     {"name": "zoey_hit", "prompt": """### Character 3: Zoey (Blue Hunter)
-**Theme**: Fast attacker, Japanese naginata bladed pole-arm, blue/cyan/white color scheme
+**Theme**: Ranged attacker, throwing knives, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -115,7 +115,7 @@ SPRITE_QUEUE = [
 **Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (96, 48), "frames": 3, "frame_size": (32, 48), "dir": "sprites/characters/zoey"},
     {"name": "zoey_portrait", "prompt": """### Character 3: Zoey (Blue Hunter)
-**Theme**: Fast attacker, Japanese naginata bladed pole-arm, blue/cyan/white color scheme
+**Theme**: Ranged attacker, throwing knives, blue/cyan/white color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -129,11 +129,11 @@ SPRITE_QUEUE = [
 **Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents""",
         "dims": (128, 128), "frames": 1, "frame_size": (128, 128), "dir": "sprites/characters/zoey"},
     {"name": "mira_idle", "prompt": """### Character 2: Mira (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+**Theme**: Fast attacker, Japanese naginata bladed pole-arm, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `mira_idle.png` | 128×48px | 4 frames @ 32×48px | Ready stance, knife visible |
+| `mira_idle.png` | 128×48px | 4 frames @ 32×48px | Ready stance, naginata ready |
 
 ### Format
 - **File type**: PNG with transparency
@@ -144,7 +144,7 @@ SPRITE_QUEUE = [
 **Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
         "dims": (128, 48), "frames": 4, "frame_size": (32, 48), "dir": "sprites/characters/mira"},
     {"name": "mira_walk", "prompt": """### Character 2: Mira (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+**Theme**: Fast attacker, Japanese naginata bladed pole-arm, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -159,11 +159,11 @@ SPRITE_QUEUE = [
 **Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
         "dims": (192, 48), "frames": 6, "frame_size": (32, 48), "dir": "sprites/characters/mira"},
     {"name": "mira_attack", "prompt": """### Character 2: Mira (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+**Theme**: Fast attacker, Japanese naginata bladed pole-arm, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
-| `mira_attack.png` | 240×48px | 5 frames @ 48×48px | Throwing knife wind-up and release |
+| `mira_attack.png` | 240×48px | 5 frames @ 48×48px | Long slash with the naginata and return to ready |
 
 ### Format
 - **File type**: PNG with transparency
@@ -174,7 +174,7 @@ SPRITE_QUEUE = [
 **Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
         "dims": (240, 48), "frames": 5, "frame_size": (48, 48), "dir": "sprites/characters/mira"},
     {"name": "mira_hit", "prompt": """### Character 2: Mira (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+**Theme**: Fast attacker, Japanese naginata bladed pole-arm, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
@@ -189,7 +189,7 @@ SPRITE_QUEUE = [
 **Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents""",
         "dims": (96, 48), "frames": 3, "frame_size": (32, 48), "dir": "sprites/characters/mira"},
     {"name": "mira_portrait", "prompt": """### Character 2: Mira (Red/Pink Hunter)
-**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
+**Theme**: Fast attacker, Japanese naginata bladed pole-arm, red/pink/black color scheme
 
 | File | Dimensions | Frames | Description |
 |------|-----------|--------|-------------|
