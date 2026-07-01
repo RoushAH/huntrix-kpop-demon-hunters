@@ -286,7 +286,7 @@ export class PlayState extends BaseState {
       const pill = new HealthPill(
         enemy.position.x + enemy.size.x / 2 - 8,
         enemy.position.y + enemy.size.y / 2 - 8,
-        0
+        healAmount
       );
       this.healthPills.push(pill);
     }
