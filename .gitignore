@@ -20,3 +20,8 @@ build/
 
 # Temporary files
 *.tmp
+
+# Environment variables (API keys, secrets)
+.env
+.env.local
+*.env

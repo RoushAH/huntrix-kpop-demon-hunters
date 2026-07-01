@@ -2,9 +2,13 @@ import openai
 import base64
 import requests
 import time
+import os
 from pathlib import Path
 
-openai.api_key = "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"
+# Load API key from environment variable
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+if not openai.api_key:
+    raise ValueError("OPENAI_API_KEY environment variable not set")
 
 # Phase 1 MVP sprites from ART_ASSETS.md
 PHASE_1_SPRITES = [

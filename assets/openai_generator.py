@@ -1,10 +1,13 @@
 import openai
 import base64
 import json
+import os
 from pathlib import Path
 
-# Set API key
-openai.api_key = "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"
+# Load API key from environment variable
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+if not openai.api_key:
+    raise ValueError("OPENAI_API_KEY environment variable not set")
 
 def analyze_cover_photo():
     """Use GPT-4 Vision to analyze the Cover Photo and extract Rumi details"""
