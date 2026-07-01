@@ -109,8 +109,18 @@ export class PlayState extends BaseState {
     // Update combo timer through ScoreManager
     this.scoreManager.updateCombo(dt);
 
-    if (this.player.health <= 0) {
+    if (this.player.health <= 0 && !this.gameOver) {
       this.gameOver = true;
+      // Immediately transition to game over state
+      const gameOverState = new GameOverState(
+        this.game,
+        this.scoreManager.currentScore,
+        this.characterData,
+        this.difficulty,
+        this.mode
+      );
+      this.game.changeState(gameOverState);
+      return;
     }
 
     if (this.mode === 'story' && this.enemiesDefeated >= this.enemiesNeededForLevel && !this.levelComplete) {
@@ -261,10 +271,6 @@ export class PlayState extends BaseState {
     if (this.levelComplete) {
       this.renderLevelComplete(ctx);
     }
-
-    if (this.gameOver) {
-      Renderer.renderGameOver(ctx);
-    }
   }
 
   renderLevelComplete(ctx) {
@@ -323,16 +329,7 @@ export class PlayState extends BaseState {
       this.inputBlocked = false;
     }
 
-    if (this.gameOver && inputState.attack && !this.inputBlocked) {
-      const gameOverState = new GameOverState(
-        this.game,
-        this.scoreManager.currentScore,
-        this.characterData,
-        this.difficulty,
-        this.mode
-      );
-      this.game.changeState(gameOverState);
-    } else if (this.levelComplete && inputState.attack && !this.inputBlocked && this.levelCompleteTimer >= this.levelCompleteDelay) {
+    if (this.levelComplete && inputState.attack && !this.inputBlocked && this.levelCompleteTimer >= this.levelCompleteDelay) {
       if (this.currentLevel < 3) {
         const nextCharacter = this.allCharacters[this.currentLevel];
         const nextLevel = this.currentLevel + 1;
