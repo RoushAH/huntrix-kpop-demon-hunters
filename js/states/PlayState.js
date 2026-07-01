@@ -39,7 +39,7 @@ export class PlayState extends BaseState {
     this.levelCompleteDelay = 1500;
     this.inputBlocked = false;
     this.enemiesDefeated = 0;
-    this.enemiesNeededForLevel = 20;
+    this.enemiesNeededForLevel = 30;
   }
 
   enter() {
@@ -277,7 +277,7 @@ export class PlayState extends BaseState {
       ctx.font = '14px monospace';
       ctx.textAlign = 'left';
       ctx.fillText('WINGWOMEN ACTIVE!', 20, 90);
-    } else if (this.wingwomenManager.timer < 10000) {
+    } else {
       const secondsLeft = Math.ceil(this.wingwomenManager.timer / 1000);
       ctx.fillStyle = '#ffff00';
       ctx.font = '14px monospace';

@@ -10,7 +10,7 @@ export class WingwomenManager {
     this.active = false;
     this.onDuration = CONFIG.WINGWOMEN_ACTIVE_DURATION;
     this.offDuration = CONFIG.WINGWOMEN_INACTIVE_DURATION;
-    this.timer = this.offDuration;
+    this.timer = 20000;
     this.initialized = false;
   }
 
@@ -35,12 +35,18 @@ export class WingwomenManager {
   update(dt, enemies) {
     if (!this.initialized) {
       this.initialized = true;
+      console.log('WingwomenManager initialized. Starting timer:', this.timer, 'ms');
       return null;
     }
 
     this.timer -= dt;
 
+    if (this.timer % 10000 < 100) {
+      console.log('Wingwomen timer:', Math.floor(this.timer / 1000), 's, Active:', this.active);
+    }
+
     if (this.active && this.timer <= 0) {
+      console.log('WINGWOMEN LEAVING!');
       this.active = false;
       this.timer = this.offDuration;
       return { event: 'companions_leave', newSpawnRate: CONFIG.SPAWN_RATE_LOW };
