@@ -9,7 +9,7 @@ export class Renderer {
     // Parallax speeds: layer 1 (far) slowest, layer 3 (near) fastest
     const parallaxSpeeds = [0.2, 0.5, 1.0];
 
-    // Render all 3 parallax layers (now RGBA with transparency!)
+    // Render all 3 parallax layers with proper transparency!
     for (let i = 1; i <= 3; i++) {
       const bgKey = `bg_${levelKey}_layer${i}`;
       const bg = images[bgKey];
@@ -38,7 +38,7 @@ export class Renderer {
     }
   }
 
-  static renderUI(ctx, player, score, combo) {
+  static renderUI(ctx, player, score, combo, images) {
     // Score
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 18px monospace';
@@ -51,7 +51,7 @@ export class Renderer {
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 18px monospace';
     ctx.fillText(`HEALTH`, 20, 75);
-    this.renderHealthHearts(ctx, player, 20, 90);
+    this.renderHealthHearts(ctx, player, 20, 90, images);
 
     // Combo meter
     if (combo > 0) {
@@ -68,38 +68,74 @@ export class Renderer {
     ctx.fillText(player.name.toUpperCase(), 780, 30);
   }
 
-  static renderHealthHearts(ctx, player, x, y) {
+  static renderHealthHearts(ctx, player, x, y, images) {
     const maxHearts = Math.ceil(player.maxHealth / 20); // 1 heart = 20 HP
     const fullHearts = Math.floor(player.health / 20);
     const partialHeart = (player.health % 20) / 20;
-    const heartSize = 16;
-    const heartSpacing = 20;
 
-    for (let i = 0; i < maxHearts; i++) {
-      const heartX = x + (i * heartSpacing);
+    // Get heart sprites
+    const heartFull = images && images['heart_full'];
+    const heartEmpty = images && images['heart_empty'];
+    const useSprites = heartFull && heartFull.complete && heartEmpty && heartEmpty.complete;
 
-      if (i < fullHearts) {
-        // Full heart
-        ctx.fillStyle = '#ff0000';
-        ctx.font = `${heartSize}px monospace`;
-        ctx.textAlign = 'left';
-        ctx.fillText('♥', heartX, y);
-      } else if (i === fullHearts && partialHeart > 0) {
-        // Partial heart (draw both and clip)
-        ctx.fillStyle = '#333333';
-        ctx.fillText('♥', heartX, y);
+    if (useSprites) {
+      // Render with sprites
+      const heartWidth = 20;
+      const heartHeight = 20;
+      const heartSpacing = 24;
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(heartX, y - heartSize, heartSize * partialHeart, heartSize);
-        ctx.clip();
-        ctx.fillStyle = '#ff0000';
-        ctx.fillText('♥', heartX, y);
-        ctx.restore();
-      } else {
-        // Empty heart
-        ctx.fillStyle = '#333333';
-        ctx.fillText('♥', heartX, y);
+      for (let i = 0; i < maxHearts; i++) {
+        const heartX = x + (i * heartSpacing);
+
+        if (i < fullHearts) {
+          // Full heart
+          ctx.drawImage(heartFull, heartX, y - heartHeight, heartWidth, heartHeight);
+        } else if (i === fullHearts && partialHeart > 0) {
+          // Partial heart - draw empty first, then clip full heart
+          ctx.drawImage(heartEmpty, heartX, y - heartHeight, heartWidth, heartHeight);
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(heartX, y - heartHeight, heartWidth * partialHeart, heartHeight);
+          ctx.clip();
+          ctx.drawImage(heartFull, heartX, y - heartHeight, heartWidth, heartHeight);
+          ctx.restore();
+        } else {
+          // Empty heart
+          ctx.drawImage(heartEmpty, heartX, y - heartHeight, heartWidth, heartHeight);
+        }
+      }
+    } else {
+      // Fallback to text hearts
+      const heartSize = 16;
+      const heartSpacing = 20;
+
+      for (let i = 0; i < maxHearts; i++) {
+        const heartX = x + (i * heartSpacing);
+
+        if (i < fullHearts) {
+          // Full heart
+          ctx.fillStyle = '#ff0000';
+          ctx.font = `${heartSize}px monospace`;
+          ctx.textAlign = 'left';
+          ctx.fillText('♥', heartX, y);
+        } else if (i === fullHearts && partialHeart > 0) {
+          // Partial heart (draw both and clip)
+          ctx.fillStyle = '#333333';
+          ctx.fillText('♥', heartX, y);
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(heartX, y - heartSize, heartSize * partialHeart, heartSize);
+          ctx.clip();
+          ctx.fillStyle = '#ff0000';
+          ctx.fillText('♥', heartX, y);
+          ctx.restore();
+        } else {
+          // Empty heart
+          ctx.fillStyle = '#333333';
+          ctx.fillText('♥', heartX, y);
+        }
       }
     }
   }

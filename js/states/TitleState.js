@@ -61,48 +61,95 @@ export class TitleState extends BaseState {
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
 
-    // Title with glow effect
-    ctx.shadowColor = '#ff1493';
-    ctx.shadowBlur = 20;
-    ctx.fillStyle = '#ff1493';
-    ctx.font = 'bold 64px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('HUNTRIX', centerX, centerY - 80);
-    ctx.shadowBlur = 0;
+    // Draw logo sprite
+    const logo = this.game.images['logo'];
+    if (logo && logo.complete) {
+      const logoScale = 1.0; // Adjust as needed
+      const logoWidth = logo.width * logoScale;
+      const logoHeight = logo.height * logoScale;
+      const logoX = centerX - logoWidth / 2;
+      const logoY = centerY - 120;
 
-    ctx.fillStyle = '#9966ff';
-    ctx.font = 'bold 24px monospace';
-    ctx.fillText('K-POP DEMON HUNTERS', centerX, centerY - 20);
+      // Add glow effect
+      ctx.shadowColor = '#ff1493';
+      ctx.shadowBlur = 20;
+      ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+      ctx.shadowBlur = 0;
+    } else {
+      // Fallback text
+      ctx.shadowColor = '#ff1493';
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = '#ff1493';
+      ctx.font = 'bold 64px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('HUNTRIX', centerX, centerY - 80);
+      ctx.shadowBlur = 0;
 
+      ctx.fillStyle = '#9966ff';
+      ctx.font = 'bold 24px monospace';
+      ctx.fillText('K-POP DEMON HUNTERS', centerX, centerY - 20);
+    }
+
+    // Draw INSERT COIN sprite (blinking)
     if (this.showText) {
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px monospace';
-      ctx.fillText('INSERT COIN', centerX, centerY + 40);
+      const insertCoin = this.game.images['insert_coin'];
+      if (insertCoin && insertCoin.complete) {
+        const coinScale = 0.8;
+        const coinWidth = insertCoin.width * coinScale;
+        const coinHeight = insertCoin.height * coinScale;
+        const coinX = centerX - coinWidth / 2;
+        const coinY = centerY + 20;
+        ctx.drawImage(insertCoin, coinX, coinY, coinWidth, coinHeight);
+      } else {
+        // Fallback text
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 20px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('INSERT COIN', centerX, centerY + 40);
+      }
     }
 
     // Menu options
-    const startY = centerY + 90;
-    const optionsY = centerY + 130;
+    const startY = centerY + 100;
+    const optionsY = centerY + 140;
 
-    // Start button
-    if (this.selectedOption === 0) {
+    // Start button - use press_start sprite
+    const pressStart = this.game.images['press_start'];
+    if (pressStart && pressStart.complete && this.selectedOption === 0) {
+      const startScale = 0.7;
+      const startWidth = pressStart.width * startScale;
+      const startHeight = pressStart.height * startScale;
+      const startX = centerX - startWidth / 2;
+      const startYPos = startY - startHeight / 2;
+      ctx.drawImage(pressStart, startX, startYPos, startWidth, startHeight);
+
+      // Selection indicator
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 3;
-      ctx.strokeRect(centerX - 100, startY - 25, 200, 40);
+      ctx.strokeRect(startX - 5, startYPos - 5, startWidth + 10, startHeight + 10);
+    } else {
+      // Options or unselected START
+      if (this.selectedOption === 0) {
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(centerX - 100, startY - 25, 200, 40);
+      }
+      ctx.fillStyle = this.selectedOption === 0 ? '#ffffff' : '#9966ff';
+      ctx.font = 'bold 18px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('START', centerX, startY);
     }
-    ctx.fillStyle = this.selectedOption === 0 ? '#ffffff' : '#9966ff';
-    ctx.font = 'bold 18px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('START', centerX, startY);
 
-    // Options button
+    // Options button (text based)
     if (this.selectedOption === 1) {
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 3;
       ctx.strokeRect(centerX - 100, optionsY - 25, 200, 40);
     }
     ctx.fillStyle = this.selectedOption === 1 ? '#ffffff' : '#9966ff';
+    ctx.font = 'bold 18px monospace';
+    ctx.textAlign = 'center';
     ctx.fillText('OPTIONS', centerX, optionsY);
 
     ctx.fillStyle = '#666666';

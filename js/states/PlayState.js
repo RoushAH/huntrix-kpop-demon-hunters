@@ -339,7 +339,7 @@ export class PlayState extends BaseState {
       effect.render(ctx, images);
     });
 
-    Renderer.renderUI(ctx, this.player, this.scoreManager.currentScore, this.scoreManager.currentCombo);
+    Renderer.renderUI(ctx, this.player, this.scoreManager.currentScore, this.scoreManager.currentCombo, this.game.images);
 
     if (this.mode === 'story') {
       ctx.fillStyle = '#ffffff';

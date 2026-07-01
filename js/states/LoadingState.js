@@ -55,8 +55,22 @@ export class LoadingState extends BaseState {
     ctx.fillStyle = '#1a0033';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    // Draw poster if loaded
-    if (this.posterLoaded && this.poster) {
+    // Draw logo sprite if in loaded images, otherwise use poster or fallback
+    const logo = this.game.images && this.game.images['logo'];
+    if (logo && logo.complete) {
+      const logoScale = 1.2;
+      const logoWidth = logo.width * logoScale;
+      const logoHeight = logo.height * logoScale;
+      const logoX = centerX - logoWidth / 2;
+      const logoY = centerY - logoHeight / 2 - 50;
+
+      // Add glow effect
+      ctx.shadowColor = '#ff1493';
+      ctx.shadowBlur = 30;
+      ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+      ctx.shadowBlur = 0;
+    } else if (this.posterLoaded && this.poster) {
+      // Draw poster if logo not loaded yet
       const posterWidth = 600;
       const posterHeight = (this.poster.height / this.poster.width) * posterWidth;
       const posterX = centerX - posterWidth / 2;
@@ -64,7 +78,7 @@ export class LoadingState extends BaseState {
 
       ctx.drawImage(this.poster, posterX, posterY, posterWidth, posterHeight);
     } else {
-      // Fallback text while poster loads
+      // Fallback text while assets load
       ctx.fillStyle = '#ff1493';
       ctx.font = 'bold 48px monospace';
       ctx.textAlign = 'center';

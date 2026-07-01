@@ -66,26 +66,68 @@ export class DifficultySelectState extends BaseState {
       const y = startY + (index * spacing);
       const isSelected = index === this.selectedIndex;
 
-      if (isSelected) {
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(centerX - 250, y - 30, 500, 80);
+      // Get difficulty button sprite
+      const buttonKey = index === 0 ? 'button_easy' : 'button_hard';
+      const buttonSprite = this.game.images[buttonKey];
+
+      if (buttonSprite && buttonSprite.complete) {
+        // Draw button sprite
+        const buttonScale = 0.8;
+        const buttonWidth = buttonSprite.width * buttonScale;
+        const buttonHeight = buttonSprite.height * buttonScale;
+        const buttonX = centerX - buttonWidth / 2;
+        const buttonY = y - buttonHeight / 2;
+
+        // Add glow effect if selected
+        if (isSelected) {
+          ctx.shadowColor = diff.color;
+          ctx.shadowBlur = 20;
+        }
+
+        ctx.drawImage(buttonSprite, buttonX, buttonY, buttonWidth, buttonHeight);
+        ctx.shadowBlur = 0;
+
+        // Selection border
+        if (isSelected) {
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 3;
+          ctx.strokeRect(buttonX - 5, buttonY - 5, buttonWidth + 10, buttonHeight + 10);
+        }
+
+        // Draw description and details below button
+        ctx.font = '14px monospace';
+        ctx.fillStyle = isSelected ? '#ffffff' : '#999999';
+        ctx.textAlign = 'center';
+        ctx.fillText(diff.description, centerX, buttonY + buttonHeight + 15);
+
+        diff.details.forEach((detail, i) => {
+          ctx.font = '12px monospace';
+          ctx.fillStyle = isSelected ? '#cccccc' : '#666666';
+          ctx.fillText(`• ${detail}`, centerX, buttonY + buttonHeight + 33 + (i * 14));
+        });
+      } else {
+        // Fallback to original text rendering
+        if (isSelected) {
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 3;
+          ctx.strokeRect(centerX - 250, y - 30, 500, 80);
+        }
+
+        ctx.fillStyle = isSelected ? diff.color : '#666666';
+        ctx.font = 'bold 24px monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(diff.name, centerX - 230, y);
+
+        ctx.font = '14px monospace';
+        ctx.fillStyle = isSelected ? '#ffffff' : '#999999';
+        ctx.fillText(diff.description, centerX - 230, y + 20);
+
+        diff.details.forEach((detail, i) => {
+          ctx.font = '12px monospace';
+          ctx.fillStyle = isSelected ? '#cccccc' : '#666666';
+          ctx.fillText(`• ${detail}`, centerX - 220, y + 38 + (i * 14));
+        });
       }
-
-      ctx.fillStyle = isSelected ? diff.color : '#666666';
-      ctx.font = 'bold 24px monospace';
-      ctx.textAlign = 'left';
-      ctx.fillText(diff.name, centerX - 230, y);
-
-      ctx.font = '14px monospace';
-      ctx.fillStyle = isSelected ? '#ffffff' : '#999999';
-      ctx.fillText(diff.description, centerX - 230, y + 20);
-
-      diff.details.forEach((detail, i) => {
-        ctx.font = '12px monospace';
-        ctx.fillStyle = isSelected ? '#cccccc' : '#666666';
-        ctx.fillText(`• ${detail}`, centerX - 220, y + 38 + (i * 14));
-      });
     });
 
     ctx.fillStyle = '#666666';
