@@ -60,7 +60,13 @@ export class Entity {
     this.health -= amount;
     if (this.health <= 0) {
       this.health = 0;
-      this.active = false;
+      // Check if entity supports death animation
+      if (this.isDying !== undefined) {
+        this.isDying = true;
+        this.setAnimation('death');
+      } else {
+        this.active = false;
+      }
     }
   }
 

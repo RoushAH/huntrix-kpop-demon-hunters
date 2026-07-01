@@ -55,6 +55,14 @@ export class Enemy extends Entity {
       this.useSprites = true;
       this.frameCount = { walk: 4, attack: 4, death: 5 };
     }
+
+    // Death animation handling
+    this.isDying = false;
+    this.deathAnimationTimer = 0;
+    this.deathAnimationDuration = (this.frameCount.death || 4) * 100;
+
+    // Flip enemies to face left (toward player)
+    this.flipX = true;
   }
 
   shouldDropHealthPill() {
@@ -62,6 +70,23 @@ export class Enemy extends Entity {
   }
 
   update(dt, target) {
+    // Handle death animation
+    if (this.isDying) {
+      this.deathAnimationTimer += dt;
+      // Update animation frames
+      this.animationTimer += dt;
+      const currentFrameCount = this.frameCount[this.currentAnimation] || 1;
+      if (this.animationTimer >= this.animationSpeed) {
+        this.animationFrame = (this.animationFrame + 1) % currentFrameCount;
+        this.animationTimer = 0;
+      }
+
+      if (this.deathAnimationTimer >= this.deathAnimationDuration) {
+        this.active = false;
+      }
+      return; // Don't move or attack while dying
+    }
+
     super.update(dt);
 
     if (!this.active || !target) return;
@@ -75,7 +100,7 @@ export class Enemy extends Entity {
       this.velocity.y = (dy / distance) * this.speed;
       this.setAnimation('walk');
 
-      // Flip sprite based on direction
+      // Flip sprite based on direction (enemies move right to left, so flip when moving left)
       this.flipX = dx < 0;
     } else {
       this.velocity.x = 0;
