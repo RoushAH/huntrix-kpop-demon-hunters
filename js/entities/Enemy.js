@@ -17,9 +17,9 @@ export class Enemy extends Entity {
     this.difficulty = difficulty;
 
     const baseStats = {
-      basic: { health: 30, speed: 80, damage: 10 },
-      fast: { health: 20, speed: 140, damage: 8 },
-      tank: { health: 60, speed: 50, damage: 15 }
+      basic: { health: 30, speed: 100, damage: 10 },
+      fast: { health: 20, speed: 180, damage: 8 },
+      tank: { health: 80, speed: 60, damage: 15 }
     };
 
     const stats = baseStats[type] || baseStats.basic;

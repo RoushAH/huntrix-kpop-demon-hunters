@@ -47,7 +47,7 @@ export class PlayState extends BaseState {
     this.player.health = this.difficultyConfig.playerHealth;
     this.player.maxHealth = this.difficultyConfig.playerHealth;
 
-    this.enemySpawner = new EnemySpawner(this.difficulty, CONFIG.SPAWN_RATE_LOW);
+    this.enemySpawner = new EnemySpawner(this.difficulty, CONFIG.SPAWN_RATE_LOW, this.currentLevel);
 
     const charactersForWingwomen = this.allCharacters && this.allCharacters.length > 1
       ? this.allCharacters
