@@ -271,6 +271,10 @@ export class PlayState extends BaseState {
   }
 
   onEnemyDefeated(enemy) {
+    // Only process once per enemy
+    if (enemy.defeated) return;
+    enemy.defeated = true;
+
     this.scoreManager.incrementCombo();
     this.scoreManager.addPoints(100);
     this.enemiesDefeated++;
@@ -283,6 +287,7 @@ export class PlayState extends BaseState {
     }
 
     if (enemy.shouldDropHealthPill()) {
+      const healAmount = this.difficulty === 'easy' ? 40 : 20;
       const pill = new HealthPill(
         enemy.position.x + enemy.size.x / 2 - 8,
         enemy.position.y + enemy.size.y / 2 - 8,
