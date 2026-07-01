@@ -37,7 +37,7 @@ export class SajaBoy extends Entity {
         this.maxHealth = baseHP;
         this.speed = baseSpeed * 1.5; // 1.5× speed
         this.damage = 12;
-        this.color = '#ffcc00'; // Yellow
+        this.color = '#00cc00'; // Green
         this.dodgeChance = 0.5; // 50% dodge chance for projectiles
         break;
 
@@ -264,7 +264,7 @@ export class SajaBoy extends Entity {
 
     if (this.boyType === 'dodger') {
       // Blur effect indicator
-      ctx.fillStyle = 'rgba(255, 204, 0, 0.3)';
+      ctx.fillStyle = 'rgba(0, 204, 0, 0.3)';
       ctx.fillRect(this.position.x - 4, this.position.y, 4, this.size.y);
     }
   }

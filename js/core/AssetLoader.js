@@ -80,6 +80,11 @@ export class AssetLoader {
 
   static getEnemyAssets() {
     return [
+      // Basic demon
+      { key: 'demon_basic_walk', path: 'assets/sprites/enemies/basic/demon_basic_walk.png' },
+      { key: 'demon_basic_attack', path: 'assets/sprites/enemies/basic/demon_basic_attack.png' },
+      { key: 'demon_basic_death', path: 'assets/sprites/enemies/basic/demon_basic_death.png' },
+
       // Fast demon
       { key: 'demon_fast_walk', path: 'assets/sprites/enemies/fast/demon_fast_walk.png' },
       { key: 'demon_fast_attack', path: 'assets/sprites/enemies/fast/demon_fast_attack.png' },
@@ -98,6 +103,32 @@ export class AssetLoader {
 
       // Saja Boy 2 (Blue Freeze - Ice man)
       { key: 'saja_boy_2_idle', path: 'assets/sprites/enemies/saja_boys/saja_boy_2_idle.png' },
+      { key: 'saja_boy_2_attack', path: 'assets/sprites/enemies/saja_boys/saja_boy_2_attack.png' },
+      { key: 'saja_boy_2_hit', path: 'assets/sprites/enemies/saja_boys/saja_boy_2_hit.png' },
+      { key: 'saja_boy_2_death', path: 'assets/sprites/enemies/saja_boys/saja_boy_2_death.png' },
+
+      // Saja Boy 3 (Green Dodger)
+      { key: 'saja_boy_3_idle', path: 'assets/sprites/enemies/saja_boys/saja_boy_3_idle.png' },
+      { key: 'saja_boy_3_attack', path: 'assets/sprites/enemies/saja_boys/saja_boy_3_attack.png' },
+      { key: 'saja_boy_3_hit', path: 'assets/sprites/enemies/saja_boys/saja_boy_3_hit.png' },
+      { key: 'saja_boy_3_death', path: 'assets/sprites/enemies/saja_boys/saja_boy_3_death.png' },
+
+      // Saja Boy 4 (Purple Summoner)
+      { key: 'saja_boy_4_idle', path: 'assets/sprites/enemies/saja_boys/saja_boy_4_idle.png' },
+      { key: 'saja_boy_4_attack', path: 'assets/sprites/enemies/saja_boys/saja_boy_4_attack.png' },
+      { key: 'saja_boy_4_hit', path: 'assets/sprites/enemies/saja_boys/saja_boy_4_hit.png' },
+      { key: 'saja_boy_4_death', path: 'assets/sprites/enemies/saja_boys/saja_boy_4_death.png' },
+
+      // Saja Boy 5 (Orange Berserker)
+      { key: 'saja_boy_5_idle', path: 'assets/sprites/enemies/saja_boys/saja_boy_5_idle.png' },
+      { key: 'saja_boy_5_attack', path: 'assets/sprites/enemies/saja_boys/saja_boy_5_attack.png' },
+      { key: 'saja_boy_5_hit', path: 'assets/sprites/enemies/saja_boys/saja_boy_5_hit.png' },
+      { key: 'saja_boy_5_death', path: 'assets/sprites/enemies/saja_boys/saja_boy_5_death.png' },
+
+      // Gwi-Ma (Final Boss)
+      { key: 'gwima_idle', path: 'assets/sprites/enemies/gwima/gwima_idle.png' },
+      { key: 'gwima_hit', path: 'assets/sprites/enemies/gwima/gwima_hit.png' },
+      { key: 'gwima_death', path: 'assets/sprites/enemies/gwima/gwima_death.png' },
     ];
   }
 
