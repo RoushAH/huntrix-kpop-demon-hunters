@@ -1,4 +1,6 @@
 import { BaseState } from './BaseState.js';
+import { PlayState } from './PlayState.js';
+import { CHARACTERS } from '../data/characters.js';
 
 export class TitleState extends BaseState {
   constructor(game) {
@@ -54,7 +56,9 @@ export class TitleState extends BaseState {
   handleInput(inputState) {
     if (inputState.attack && !this.inputDetected) {
       this.inputDetected = true;
-      console.log('Input detected - transitioning to character select');
+
+      const playState = new PlayState(this.game, CHARACTERS[0], 'easy');
+      this.game.changeState(playState);
     }
   }
 }
