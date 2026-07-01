@@ -19,6 +19,7 @@ export class Player extends Entity {
     this.isAttacking = false;
     this.attackDuration = 200;
     this.attackTimer = 0;
+    this.justAttacked = false; // Flag to track when attack just happened
 
     this.characterType = characterData.type;
     this.color = characterData.color;
@@ -26,6 +27,8 @@ export class Player extends Entity {
 
   update(dt) {
     super.update(dt);
+
+    this.justAttacked = false; // Reset flag each frame
 
     if (this.attackCooldown > 0) {
       this.attackCooldown -= dt;
@@ -62,12 +65,7 @@ export class Player extends Entity {
     this.isAttacking = true;
     this.attackTimer = 0;
     this.attackCooldown = CONFIG.ATTACK_COOLDOWN;
-
-    if (this.characterType === 'mira') {
-      return { type: 'projectile' };
-    }
-
-    return this.getAttackBox();
+    this.justAttacked = true; // Mark that attack just happened this frame
   }
 
   getAttackBox() {

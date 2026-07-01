@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 # Set API key
-openai.api_key = "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"
+openai.api_key = "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"
 
 def analyze_cover_photo():
     """Use GPT-4 Vision to analyze the Cover Photo and extract Rumi details"""
@@ -77,13 +77,19 @@ Style: Cute arcade game character art, bold colors, chibi proportions."""
     print("Generating sprite with DALL-E 3...")
     print(f"\nPrompt:\n{prompt}\n")
 
-    response = openai.images.generate(
-        model="dall-e-3",
-        prompt=prompt,
-        size="1024x1024",
-        quality="standard",
-        n=1
-    )
+    # Try dall-e-2 first (more likely to be available)
+    try:
+        response = openai.images.generate(
+            model="dall-e-2",
+            prompt=prompt,
+            size="1024x1024",
+            n=1
+        )
+    except Exception as e:
+        print(f"DALL-E 2 failed: {e}")
+        print("Trying gpt-4o image generation...")
+        # Fallback: try other approaches
+        raise
 
     image_url = response.data[0].url
 

@@ -127,20 +127,30 @@ export class PlayState extends BaseState {
     const leeway = this.difficultyConfig.hitboxLeeway;
     const allPlayers = [this.player, ...this.wingwomenManager.getActiveCompanions()];
 
+    // Check for new attacks and create projectiles for ranged characters
     allPlayers.forEach(player => {
-      if (!player.active || !player.isAttacking) return;
+      if (!player.active) return;
 
-      const attackResult = player.getAttackBox();
-      if (attackResult && attackResult.type === 'projectile') {
+      // Create projectile if character just attacked and is ranged (Mira)
+      if (player.justAttacked && player.characterType === 'mira') {
         const projectile = new Projectile(
           player.position.x + player.size.x,
           player.position.y + player.size.y / 2 - 8,
           player.attackDamage * this.difficultyConfig.playerDamageMultiplier
         );
         this.projectiles.push(projectile);
-      } else if (attackResult) {
+      }
+    });
+
+    // Check melee attacks
+    allPlayers.forEach(player => {
+      if (!player.active || !player.isAttacking) return;
+      if (player.characterType === 'mira') return; // Mira doesn't do melee
+
+      const attackBox = player.getAttackBox();
+      if (attackBox) {
         this.enemies.forEach(enemy => {
-          if (enemy.active && CollisionDetector.checkAABB(attackResult, enemy, leeway)) {
+          if (enemy.active && CollisionDetector.checkAABB(attackBox, enemy, leeway)) {
             const damage = player.attackDamage * this.difficultyConfig.playerDamageMultiplier;
             enemy.takeDamage(damage);
 
@@ -151,29 +161,6 @@ export class PlayState extends BaseState {
         });
       }
     });
-
-    if (this.player.isAttacking) {
-      const attackResult = this.player.getAttackBox();
-      if (attackResult && attackResult.type === 'projectile') {
-        const projectile = new Projectile(
-          this.player.position.x + this.player.size.x,
-          this.player.position.y + this.player.size.y / 2 - 8,
-          this.player.attackDamage * this.difficultyConfig.playerDamageMultiplier
-        );
-        this.projectiles.push(projectile);
-      } else if (attackResult) {
-        this.enemies.forEach(enemy => {
-          if (enemy.active && CollisionDetector.checkAABB(attackResult, enemy, leeway)) {
-            const damage = this.player.attackDamage * this.difficultyConfig.playerDamageMultiplier;
-            enemy.takeDamage(damage);
-
-            if (!enemy.active) {
-              this.onEnemyDefeated(enemy);
-            }
-          }
-        });
-      }
-    }
 
     this.projectiles.forEach(projectile => {
       if (!projectile.active) return;
