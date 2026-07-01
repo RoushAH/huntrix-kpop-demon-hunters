@@ -59,6 +59,11 @@ export class PlayState extends BaseState {
     this.healthPills = [];
     this.scoreManager.reset();
     this.gameOver = false;
+
+    // Start level music
+    const trackName = `level${this.currentLevel}`;
+    this.game.audioManager.playMusic(trackName);
+    this.game.audioManager.resumeAudioContext();
   }
 
   update(dt) {
@@ -95,6 +100,13 @@ export class PlayState extends BaseState {
     if (wingwomenEvent) {
       console.log('Wingwomen event:', wingwomenEvent);
       this.enemySpawner.setSpawnRate(wingwomenEvent.newSpawnRate);
+
+      // Play sound effects for wingwomen events
+      if (wingwomenEvent.event === 'companions_join') {
+        this.game.audioManager.playWingwomenArriveSound();
+      } else if (wingwomenEvent.event === 'companions_leave') {
+        this.game.audioManager.playWingwomenLeaveSound();
+      }
     }
 
     this.checkCollisions();
@@ -159,13 +171,17 @@ export class PlayState extends BaseState {
       if (!player.active) return;
 
       // Create projectile if character just attacked and is ranged (Mira)
-      if (player.justAttacked && player.characterType === 'mira') {
-        const projectile = new Projectile(
-          player.position.x + player.size.x,
-          player.position.y + player.size.y / 2 - 8,
-          player.attackDamage * this.difficultyConfig.playerDamageMultiplier
-        );
-        this.projectiles.push(projectile);
+      if (player.justAttacked) {
+        this.game.audioManager.playAttackSound(player.characterType);
+
+        if (player.characterType === 'mira') {
+          const projectile = new Projectile(
+            player.position.x + player.size.x,
+            player.position.y + player.size.y / 2 - 8,
+            player.attackDamage * this.difficultyConfig.playerDamageMultiplier
+          );
+          this.projectiles.push(projectile);
+        }
       }
     });
 
@@ -180,6 +196,7 @@ export class PlayState extends BaseState {
           if (enemy.active && CollisionDetector.checkAABB(attackBox, enemy, leeway)) {
             const damage = player.attackDamage * this.difficultyConfig.playerDamageMultiplier;
             enemy.takeDamage(damage);
+            this.game.audioManager.playHitSound();
 
             if (!enemy.active) {
               this.onEnemyDefeated(enemy);
@@ -196,6 +213,7 @@ export class PlayState extends BaseState {
         if (enemy.active && CollisionDetector.checkAABB(projectile, enemy, leeway)) {
           enemy.takeDamage(projectile.damage);
           projectile.onHit();
+          this.game.audioManager.playHitSound();
 
           if (!enemy.active) {
             this.onEnemyDefeated(enemy);
@@ -211,6 +229,7 @@ export class PlayState extends BaseState {
           : this.player.maxHealth * 0.2;
         this.player.heal(healAmount);
         pill.active = false;
+        this.game.audioManager.playHealthPickupSound();
       }
     });
 
@@ -227,6 +246,13 @@ export class PlayState extends BaseState {
     this.scoreManager.incrementCombo();
     this.scoreManager.addPoints(100);
     this.enemiesDefeated++;
+
+    this.game.audioManager.playEnemyDeathSound();
+
+    // Play combo sound at milestones
+    if (this.scoreManager.currentCombo === 5 || this.scoreManager.currentCombo === 10) {
+      this.game.audioManager.playComboSound(this.scoreManager.currentCombo);
+    }
 
     if (enemy.shouldDropHealthPill()) {
       const pill = new HealthPill(

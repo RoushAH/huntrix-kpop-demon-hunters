@@ -1,4 +1,5 @@
 import { CONFIG } from '../config.js';
+import { AudioManager } from '../systems/AudioManager.js';
 
 export class Game {
   constructor(canvas) {
@@ -12,6 +13,7 @@ export class Game {
     this.accumulator = 0;
     this.fixedDeltaTime = CONFIG.FIXED_DT;
 
+    this.audioManager = new AudioManager();
     this.running = false;
   }
 

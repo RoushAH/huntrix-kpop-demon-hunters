@@ -14,6 +14,7 @@ export class TitleState extends BaseState {
     this.showText = true;
     this.inputDetected = false;
     this.inputBlocked = false;
+    this.game.audioManager.playMusic('title');
   }
 
   update(dt) {
@@ -60,6 +61,7 @@ export class TitleState extends BaseState {
 
     if (inputState.attack && !this.inputDetected && !this.inputBlocked) {
       this.inputDetected = true;
+      this.game.audioManager.playSelectSound();
 
       const characterSelectState = new CharacterSelectState(this.game);
       this.game.changeState(characterSelectState);
