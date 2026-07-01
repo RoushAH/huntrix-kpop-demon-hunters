@@ -302,6 +302,9 @@ export class PlayState extends BaseState {
 
     const images = this.game.images;
 
+    // Render background
+    Renderer.renderBackground(ctx, images, this.currentLevel);
+
     this.player.render(ctx, images);
 
     this.wingwomenManager.getActiveCompanions().forEach(companion => {

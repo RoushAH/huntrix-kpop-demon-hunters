@@ -605,8 +605,24 @@ export class BossState extends BaseState {
 
   render(ctx) {
     // Background
-    ctx.fillStyle = '#1a0033';
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    // Render boss arena background
+    const images = this.game.images;
+    for (let i = 1; i <= 3; i++) {
+      const bgKey = `bg_boss_layer${i}`;
+      const bg = images[bgKey];
+      if (bg && bg.complete) {
+        const scale = ctx.canvas.width / bg.width;
+        const scaledHeight = bg.height * scale;
+        const yOffset = (ctx.canvas.height - scaledHeight) / 2;
+        ctx.drawImage(bg, 0, yOffset, ctx.canvas.width, scaledHeight);
+      }
+    }
+
+    // Fallback
+    if (!images['bg_boss_layer1']) {
+      ctx.fillStyle = '#1a0033';
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
 
     // Arena border
     ctx.strokeStyle = '#ff00ff';

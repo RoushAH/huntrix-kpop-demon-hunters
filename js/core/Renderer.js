@@ -1,4 +1,29 @@
 export class Renderer {
+  static renderBackground(ctx, images, level = 1) {
+    const levelKey = level > 3 ? 'boss' : `level${level}`;
+
+    // Render 3 parallax layers
+    for (let i = 1; i <= 3; i++) {
+      const bgKey = `bg_${levelKey}_layer${i}`;
+      const bg = images[bgKey];
+
+      if (bg && bg.complete) {
+        // Scale to fit canvas width, maintain aspect ratio
+        const scale = ctx.canvas.width / bg.width;
+        const scaledHeight = bg.height * scale;
+        const yOffset = (ctx.canvas.height - scaledHeight) / 2;
+
+        ctx.drawImage(bg, 0, yOffset, ctx.canvas.width, scaledHeight);
+      }
+    }
+
+    // Fallback solid color if no backgrounds loaded
+    if (!images[`bg_${levelKey}_layer1`]) {
+      ctx.fillStyle = '#1a0033';
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+  }
+
   static renderUI(ctx, player, score, combo) {
     // Score
     ctx.fillStyle = '#ffffff';
