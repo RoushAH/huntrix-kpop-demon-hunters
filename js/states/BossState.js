@@ -638,8 +638,10 @@ export class BossState extends BaseState {
     }
 
     // Render entities
+    const images = this.game.images;
+
     if (this.player) {
-      this.player.render(ctx);
+      this.player.render(ctx, images);
 
       // Freeze effect
       if (this.player.freezeTimer > 0) {
@@ -650,7 +652,7 @@ export class BossState extends BaseState {
     }
 
     this.wingwomenManager.getActiveCompanions().forEach(companion => {
-      companion.render(ctx);
+      companion.render(ctx, images);
 
       if (companion.freezeTimer > 0) {
         ctx.fillStyle = 'rgba(0, 221, 255, 0.4)';
@@ -659,16 +661,16 @@ export class BossState extends BaseState {
       }
     });
 
-    this.sajaBoys.forEach(boy => boy.render(ctx));
-    this.summonedEnemies.forEach(enemy => enemy.render(ctx));
+    this.sajaBoys.forEach(boy => boy.render(ctx, images));
+    this.summonedEnemies.forEach(enemy => enemy.render(ctx, images));
 
     if (this.finalBoss && this.finalBoss.active) {
-      this.finalBoss.render(ctx);
+      this.finalBoss.render(ctx, images);
     }
 
-    this.projectiles.forEach(proj => proj.render(ctx));
-    this.freezeProjectiles.forEach(proj => proj.render(ctx));
-    this.healthPills.forEach(pill => pill.render(ctx));
+    this.projectiles.forEach(proj => proj.render(ctx, images));
+    this.freezeProjectiles.forEach(proj => proj.render(ctx, images));
+    this.healthPills.forEach(pill => pill.render(ctx, images));
 
     // UI
     this.renderUI(ctx);

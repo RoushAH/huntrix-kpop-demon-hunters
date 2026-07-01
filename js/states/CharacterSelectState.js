@@ -52,8 +52,19 @@ export class CharacterSelectState extends BaseState {
         ctx.strokeRect(x - 65, y - 85, 130, 180);
       }
 
-      ctx.fillStyle = char.color;
-      ctx.fillRect(x - 16, y - 24, 32, 48);
+      // Try to render portrait sprite, fallback to colored rectangle
+      const images = this.game.images;
+      const portraitKey = `${char.type}_portrait`;
+      const portrait = images && images[portraitKey];
+
+      if (portrait && portrait.complete) {
+        // Render portrait (assume 128x128 from plan, scale to 64x64)
+        ctx.drawImage(portrait, x - 32, y - 56, 64, 64);
+      } else {
+        // Fallback to colored rectangle
+        ctx.fillStyle = char.color;
+        ctx.fillRect(x - 16, y - 24, 32, 48);
+      }
 
       ctx.fillStyle = isSelected ? '#ffffff' : '#9966ff';
       ctx.font = 'bold 20px monospace';

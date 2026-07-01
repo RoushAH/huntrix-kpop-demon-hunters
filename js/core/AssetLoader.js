@@ -88,13 +88,38 @@ export class AssetLoader {
       // Tank demon
       { key: 'demon_tank_walk', path: 'assets/sprites/enemies/tank/demon_tank_walk.png' },
       { key: 'demon_tank_attack', path: 'assets/sprites/enemies/tank/demon_tank_attack.png' },
+      { key: 'demon_tank_death', path: 'assets/sprites/enemies/tank/demon_tank_death.png' },
+    ];
+  }
+
+  static getEffectAssets() {
+    return [
+      { key: 'blood_splatter', path: 'assets/sprites/effects/blood_splatter.png' },
+      { key: 'combo_flash', path: 'assets/sprites/effects/combo_flash.png' },
+      { key: 'heal_effect', path: 'assets/sprites/effects/heal_effect.png' },
+      { key: 'hit_spark', path: 'assets/sprites/effects/hit_spark.png' },
+      { key: 'knife', path: 'assets/sprites/effects/knife.png' },
+      { key: 'slash_effect', path: 'assets/sprites/effects/slash_effect.png' },
+    ];
+  }
+
+  static getTutorialAssets() {
+    return [
+      { key: 'tutorial_arrow_keys', path: 'assets/sprites/tutorial/tutorial_arrow_keys.png' },
+      { key: 'tutorial_attack_icon', path: 'assets/sprites/tutorial/tutorial_attack_icon.png' },
+      { key: 'tutorial_drag_gesture', path: 'assets/sprites/tutorial/tutorial_drag_gesture.png' },
+      { key: 'tutorial_enemy_icon', path: 'assets/sprites/tutorial/tutorial_enemy_icon.png' },
+      { key: 'tutorial_space_key', path: 'assets/sprites/tutorial/tutorial_space_key.png' },
+      { key: 'tutorial_tap_gesture', path: 'assets/sprites/tutorial/tutorial_tap_gesture.png' },
     ];
   }
 
   static getAllAssets() {
     return [
       ...AssetLoader.getCharacterAssets(),
-      ...AssetLoader.getEnemyAssets()
+      ...AssetLoader.getEnemyAssets(),
+      ...AssetLoader.getEffectAssets(),
+      ...AssetLoader.getTutorialAssets()
     ];
   }
 }

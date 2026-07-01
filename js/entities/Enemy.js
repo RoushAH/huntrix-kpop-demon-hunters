@@ -40,6 +40,13 @@ export class Enemy extends Entity {
     this.color = this.colors[type] || this.colors.basic;
 
     this.healthPillDropChance = difficulty === 'easy' ? 0.2 : 0.1;
+
+    // Enable sprite rendering
+    if (type === 'fast' || type === 'tank') {
+      this.spriteKey = `demon_${type}`;
+      this.useSprites = true;
+      this.frameCount = { walk: 4, attack: 3, death: 4 };
+    }
   }
 
   shouldDropHealthPill() {
@@ -58,6 +65,10 @@ export class Enemy extends Entity {
     if (distance > this.attackRange) {
       this.velocity.x = (dx / distance) * this.speed;
       this.velocity.y = (dy / distance) * this.speed;
+      this.setAnimation('walk');
+
+      // Flip sprite based on direction
+      this.flipX = dx < 0;
     } else {
       this.velocity.x = 0;
       this.velocity.y = 0;
@@ -65,6 +76,7 @@ export class Enemy extends Entity {
       if (this.attackCooldown <= 0) {
         this.attackTarget(target);
         this.attackCooldown = 1000;
+        this.setAnimation('attack');
       }
     }
 
@@ -83,7 +95,7 @@ export class Enemy extends Entity {
     }
   }
 
-  render(ctx) {
-    super.render(ctx, this.color);
+  render(ctx, images) {
+    super.render(ctx, this.color, images);
   }
 }
