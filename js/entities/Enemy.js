@@ -19,7 +19,7 @@ export class Enemy extends Entity {
     const baseStats = {
       basic: { health: 30, speed: 100, damage: 10 },
       fast: { health: 20, speed: 180, damage: 8 },
-      tank: { health: 80, speed: 60, damage: 15 }
+      tank: { health: 120, speed: 60, damage: 15 } // Was 80, now 120
     };
 
     const stats = baseStats[type] || baseStats.basic;
