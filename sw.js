@@ -1,4 +1,4 @@
-const CACHE_NAME = 'huntrix-v3';
+const CACHE_NAME = 'huntrix-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -20,6 +20,8 @@ const ASSETS_TO_CACHE = [
   '/js/states/CharacterSelectState.js',
   '/js/states/DifficultySelectState.js',
   '/js/states/PlayState.js',
+  '/js/systems/WingwomenManager.js',
+  '/js/systems/AIController.js',
   '/js/data/characters.js',
   '/js/utils/Vector2.js',
   '/js/utils/Storage.js',

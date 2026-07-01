@@ -4,6 +4,7 @@ import { Player } from '../entities/Player.js';
 import { EnemySpawner } from '../entities/EnemySpawner.js';
 import { Projectile } from '../entities/Projectile.js';
 import { HealthPill } from '../entities/HealthPill.js';
+import { WingwomenManager } from '../systems/WingwomenManager.js';
 import { CollisionDetector } from '../core/CollisionDetector.js';
 import { Renderer } from '../core/Renderer.js';
 import { CONFIG } from '../config.js';
@@ -24,6 +25,7 @@ export class PlayState extends BaseState {
     this.projectiles = [];
     this.healthPills = [];
     this.enemySpawner = null;
+    this.wingwomenManager = null;
 
     this.score = 0;
     this.combo = 0;
@@ -45,6 +47,7 @@ export class PlayState extends BaseState {
     this.player.maxHealth = this.difficultyConfig.playerHealth;
 
     this.enemySpawner = new EnemySpawner(this.difficulty, CONFIG.SPAWN_RATE_LOW);
+    this.wingwomenManager = new WingwomenManager(this.player, this.allCharacters || [this.characterData]);
 
     this.enemies = [];
     this.projectiles = [];
@@ -84,6 +87,11 @@ export class PlayState extends BaseState {
       pill.update(dt);
     });
 
+    const wingwomenEvent = this.wingwomenManager.update(dt, this.enemies);
+    if (wingwomenEvent) {
+      this.enemySpawner.setSpawnRate(wingwomenEvent.newSpawnRate);
+    }
+
     this.checkCollisions();
 
     this.enemies = this.enemies.filter(e => e.active);
@@ -110,6 +118,32 @@ export class PlayState extends BaseState {
 
   checkCollisions() {
     const leeway = this.difficultyConfig.hitboxLeeway;
+    const allPlayers = [this.player, ...this.wingwomenManager.getActiveCompanions()];
+
+    allPlayers.forEach(player => {
+      if (!player.active || !player.isAttacking) return;
+
+      const attackResult = player.getAttackBox();
+      if (attackResult && attackResult.type === 'projectile') {
+        const projectile = new Projectile(
+          player.position.x + player.size.x,
+          player.position.y + player.size.y / 2 - 8,
+          player.attackDamage * this.difficultyConfig.playerDamageMultiplier
+        );
+        this.projectiles.push(projectile);
+      } else if (attackResult) {
+        this.enemies.forEach(enemy => {
+          if (enemy.active && CollisionDetector.checkAABB(attackResult, enemy, leeway)) {
+            const damage = player.attackDamage * this.difficultyConfig.playerDamageMultiplier;
+            enemy.takeDamage(damage);
+
+            if (!enemy.active) {
+              this.onEnemyDefeated(enemy);
+            }
+          }
+        });
+      }
+    });
 
     if (this.player.isAttacking) {
       const attackResult = this.player.getAttackBox();
@@ -159,10 +193,12 @@ export class PlayState extends BaseState {
       }
     });
 
-    this.enemies.forEach(enemy => {
-      if (enemy.active && CollisionDetector.checkAABB(this.player, enemy, leeway)) {
-        CollisionDetector.resolveCollision(this.player, enemy);
-      }
+    allPlayers.forEach(player => {
+      this.enemies.forEach(enemy => {
+        if (enemy.active && CollisionDetector.checkAABB(player, enemy, leeway)) {
+          CollisionDetector.resolveCollision(player, enemy);
+        }
+      });
     });
   }
 
@@ -203,6 +239,10 @@ export class PlayState extends BaseState {
 
     this.player.render(ctx);
 
+    this.wingwomenManager.getActiveCompanions().forEach(companion => {
+      companion.render(ctx);
+    });
+
     this.enemies.forEach(enemy => {
       enemy.render(ctx);
     });
@@ -223,6 +263,20 @@ export class PlayState extends BaseState {
       ctx.textAlign = 'right';
       ctx.fillText(`LEVEL ${this.currentLevel}/3`, 780, 50);
       ctx.fillText(`ENEMIES: ${this.enemiesDefeated}/${this.enemiesNeededForLevel}`, 780, 70);
+    }
+
+    const companions = this.wingwomenManager.getActiveCompanions();
+    if (companions.length > 0) {
+      ctx.fillStyle = '#00ff00';
+      ctx.font = '14px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('WINGWOMEN ACTIVE!', 20, 90);
+    } else if (this.wingwomenManager.timer < 10000) {
+      const secondsLeft = Math.ceil(this.wingwomenManager.timer / 1000);
+      ctx.fillStyle = '#ffff00';
+      ctx.font = '14px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Backup in ${secondsLeft}s`, 20, 90);
     }
 
     if (this.levelComplete) {
