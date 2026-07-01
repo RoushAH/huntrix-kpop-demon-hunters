@@ -61,33 +61,33 @@ assets/
 
 \---
 
-### Character 2: Zoey (Red/Pink Hunter)
+### Character 2: Mira (Red/Pink Hunter)
 
-**Theme**: Fast attacker, martial arts, red/pink/black color scheme
+**Theme**: Ranged attacker, throwing knives, red/pink/black color scheme
 
 |File|Dimensions|Frames|Description|
 |-|-|-|-|
-|`zoey\_idle.png`|128×48px|4 frames @ 32×48px|Ready stance, knife visible|
-|`zoey\_walk.png`|192×48px|6 frames @ 32×48px|Walking animation|
-|`zoey\_attack.png`|240×48px|5 frames @ 48×48px|Throwing knife wind-up and release|
-|`zoey\_hit.png`|96×48px|3 frames @ 32×48px|Taking damage|
-|`zoey\_portrait.png`|128×128px|1 frame|Character select portrait|
+|`mira\_idle.png`|128×48px|4 frames @ 32×48px|Ready stance, knife visible|
+|`mira\_walk.png`|192×48px|6 frames @ 32×48px|Walking animation|
+|`mira\_attack.png`|240×48px|5 frames @ 48×48px|Throwing knife wind-up and release|
+|`mira\_hit.png`|96×48px|3 frames @ 32×48px|Taking damage|
+|`mira\_portrait.png`|128×128px|1 frame|Character select portrait|
 
 **Color palette**: Hot pink (#ff1493), red (#cc0033), black, gold accents
 
 \---
 
-### Character 3: Mira (Blue Hunter)
+### Character 3: Zoey (Blue Hunter)
 
-**Theme**: Ranged attacker, throwing knives, blue/cyan/white color scheme
+**Theme**: Fast attacker, Japanese naginata bladed pole-arm, blue/cyan/white color scheme
 
 |File|Dimensions|Frames|Description|
 |-|-|-|-|
-|`mira\_idle.png`|128×48px|4 frames @ 32×48px|Fighting stance, hands ready|
-|`mira\_walk.png`|192×48px|6 frames @ 32×48px|Quick step animation|
-|`mira\_attack.png`|240×48px|5 frames @ 48×48px|Punch/kick combo|
-|`mira\_hit.png`|96×48px|3 frames @ 32×48px|Taking damage|
-|`mira\_portrait.png`|128×128px|1 frame|Character select portrait|
+|`zoey\_idle.png`|128×48px|4 frames @ 32×48px|Fighting stance, naginata ready|
+|`zoey\_walk.png`|192×48px|6 frames @ 32×48px|Quick step animation|
+|`zoey\_attack.png`|240×48px|5 frames @ 48×48px|Long slash with the naginata and return to ready|
+|`zoey\_hit.png`|96×48px|3 frames @ 32×48px|Taking damage|
+|`zoey\_portrait.png`|128×128px|1 frame|Character select portrait|
 
 **Color palette**: Cyan (#00bfff), blue (#0066ff), white pants, gold accents
 

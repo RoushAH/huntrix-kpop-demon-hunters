@@ -5,19 +5,20 @@ export class AudioManager {
     this.musicVolume = 0.5;
     this.sfxVolume = 0.7;
 
-    // Music tracks - using synthesized music for now
-    // To use MP3s, convert MIDI files and change extensions to .mp3
+    // MIDI tracks - MIDI.js will handle playback
     this.tracks = {
-      title: 'assets/audio/music/Level1.mp3',    // Title plays Level 1 music
-      level1: 'assets/audio/music/Level1.mp3',
-      level2: 'assets/audio/music/Level2.mp3',
-      level3: 'assets/audio/music/Level3.mp3',
-      boss: 'assets/audio/music/Boss.mp3',
-      victory: 'assets/audio/music/Level1.mp3',
-      gameover: 'assets/audio/music/Level1.mp3'
+      title: 'assets/audio/music/Level1.mid',    // Title plays Level 1 music
+      level1: 'assets/audio/music/Level1.mid',
+      level2: 'assets/audio/music/Level2.mid',
+      level3: 'assets/audio/music/Level3.mid',
+      boss: 'assets/audio/music/Boss.mid',
+      victory: 'assets/audio/music/Level1.mid',
+      gameover: 'assets/audio/music/Level1.mid'
     };
 
     this.audioElement = null; // HTML5 Audio element for music
+    this.midiReady = false;
+    this.pendingTrack = null;
 
     this.currentTrack = null;
     this.midiLoaded = false;
@@ -42,8 +43,29 @@ export class AudioManager {
       console.warn('AudioManager: Web Audio API not supported', e);
     }
 
-    // Note: MIDI playback would require MIDI.js or similar library
-    // For now, we'll use placeholder implementation
+    // Initialize MIDI.js
+    if (typeof MIDI !== 'undefined') {
+      console.log('AudioManager: Initializing MIDI.js...');
+      MIDI.loadPlugin({
+        soundfontUrl: "https://cdn.jsdelivr.net/npm/midi-js-soundfonts@1.0.0/FluidR3_GM/",
+        instrument: "acoustic_grand_piano",
+        onsuccess: () => {
+          console.log('AudioManager: MIDI.js ready');
+          this.midiReady = true;
+          // Play pending track if any
+          if (this.pendingTrack) {
+            this.playMusic(this.pendingTrack);
+            this.pendingTrack = null;
+          }
+        },
+        onerror: (err) => {
+          console.warn('AudioManager: MIDI.js initialization failed', err);
+        }
+      });
+    } else {
+      console.warn('AudioManager: MIDI.js not loaded, using synthesized music');
+    }
+
     console.log('AudioManager: MIDI tracks available:', Object.keys(this.tracks));
   }
 
@@ -64,29 +86,28 @@ export class AudioManager {
   }
 
   tryLoadAudioFile(path, trackName) {
-    // Create audio element
-    this.audioElement = new Audio(path);
-    this.audioElement.loop = true;
-    this.audioElement.volume = this.musicVolume;
-
-    // Handle errors (file not found, etc)
-    this.audioElement.addEventListener('error', (e) => {
-      console.warn('AudioManager: Could not load audio file, using synthesized music');
-      this.audioElement = null;
-      // Fall back to synthesized music
-      this.playChiptuneLoop(trackName);
-    });
-
-    // Play when loaded
-    this.audioElement.addEventListener('canplaythrough', () => {
-      this.audioElement.play().catch(err => {
-        console.warn('AudioManager: Autoplay blocked, using synthesized music');
+    // Try MIDI.js first
+    if (this.midiReady && typeof MIDI !== 'undefined') {
+      console.log('AudioManager: Loading MIDI file:', path);
+      MIDI.Player.loadFile(path, () => {
+        console.log('AudioManager: MIDI file loaded, starting playback');
+        MIDI.Player.loop = true;
+        MIDI.Player.start();
+        // Adjust volume
+        MIDI.setVolume(0, this.musicVolume * 127);
+      }, (err) => {
+        console.warn('AudioManager: MIDI load failed, using synthesized music', err);
         this.playChiptuneLoop(trackName);
       });
-    });
-
-    // Try to load
-    this.audioElement.load();
+    } else if (!this.midiReady && typeof MIDI !== 'undefined') {
+      // MIDI.js not ready yet, queue for later
+      console.log('AudioManager: MIDI.js not ready yet, queuing track');
+      this.pendingTrack = trackName;
+    } else {
+      // MIDI.js not available, fall back
+      console.log('AudioManager: MIDI.js not available, using synthesized music');
+      this.playChiptuneLoop(trackName);
+    }
   }
 
   playChiptuneLoop(trackName) {
@@ -174,6 +195,11 @@ export class AudioManager {
 
     console.log('AudioManager: Stopping music');
 
+    // Stop MIDI.js if playing
+    if (typeof MIDI !== 'undefined' && MIDI.Player) {
+      MIDI.Player.stop();
+    }
+
     // Stop HTML5 audio if playing
     if (this.audioElement) {
       this.audioElement.pause();
@@ -190,6 +216,10 @@ export class AudioManager {
     this.musicVolume = Math.max(0, Math.min(1, volume));
     if (this.audioElement) {
       this.audioElement.volume = this.musicVolume;
+    }
+    // Update MIDI volume (0-127 range)
+    if (typeof MIDI !== 'undefined' && MIDI.setVolume) {
+      MIDI.setVolume(0, this.musicVolume * 127);
     }
   }
 
