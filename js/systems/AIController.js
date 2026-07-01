@@ -32,9 +32,66 @@ export class AIController {
         this.handleMeleeBehavior(targetEnemy, distance);
       }
     } else {
-      // No enemies, move to zone position
+      // No enemies, apply personality-based idle behavior
       this.target = null;
-      this.moveToZonePosition();
+      this.handleIdleBehavior(enemies);
+    }
+  }
+
+  handleIdleBehavior(enemies) {
+    // Rumi: Helpful - rushes to assist companions in combat
+    if (this.entity.characterType === 'rumi') {
+      const companionInCombat = this.findCompanionInCombat();
+      if (companionInCombat) {
+        // Rush to help the companion
+        this.state = 'assist';
+        const direction = companionInCombat.position.clone().subtract(this.entity.position).normalize();
+        this.entity.velocity = direction.multiply(this.entity.baseSpeed * 0.8);
+        return;
+      }
+    }
+
+    // Zoey: Proactive - patrols the open side when no enemies
+    if (this.entity.characterType === 'zoey') {
+      const openSide = this.findOpenSide(enemies);
+      if (openSide) {
+        this.state = 'patrol';
+        this.moveTowards(openSide.x, openSide.y);
+        return;
+      }
+    }
+
+    // Default: move to zone position
+    this.moveToZonePosition();
+  }
+
+  findCompanionInCombat() {
+    // Find a companion who is currently fighting an enemy
+    for (const companion of this.companions) {
+      if (companion === this.entity) continue;
+      if (companion.aiController && companion.aiController.target) {
+        return companion;
+      }
+    }
+    return null;
+  }
+
+  findOpenSide(enemies) {
+    // Determine which side of the map has fewer enemies
+    const leftCount = enemies.filter(e => e.active && e.position.x < 400).length;
+    const rightCount = enemies.filter(e => e.active && e.position.x >= 400).length;
+
+    // If sides are balanced, patrol the assigned zone edge
+    if (Math.abs(leftCount - rightCount) <= 1) {
+      const targetY = this.assignedZone === 'top' ? 120 : 330;
+      return { x: 500, y: targetY }; // Move toward right side
+    }
+
+    // Move to the side with fewer enemies
+    if (leftCount < rightCount) {
+      return { x: 250, y: 225 }; // Left side
+    } else {
+      return { x: 550, y: 225 }; // Right side
     }
   }
 

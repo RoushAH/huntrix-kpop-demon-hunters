@@ -27,7 +27,15 @@ export class WingwomenManager {
         // Make companions much weaker
         companion.baseSpeed = companion.baseSpeed * 0.5;
         companion.attackDamage = companion.attackDamage * 0.25; // Was 0.4, now 0.25 (even weaker)
-        companion.attackCooldown = 0; // Start ready to attack immediately
+
+        // Different attack speeds based on character
+        // Mira is already slower due to projectile nature, melee needs slowing
+        if (c.type === 'mira') {
+          companion.attackCooldown = 0; // Ranged, start ready
+        } else {
+          companion.attackCooldown = 0; // Start ready
+          companion.attackCooldownOverride = 500; // Melee companions attack every 500ms (player is 300ms)
+        }
 
         console.log('Created companion:', companion.name,
           'STR:', c.str,

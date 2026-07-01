@@ -66,7 +66,8 @@ export class Player extends Entity {
   attack() {
     this.isAttacking = true;
     this.attackTimer = 0;
-    this.attackCooldown = CONFIG.ATTACK_COOLDOWN;
+    // Use override cooldown if set (for AI companions), otherwise use default
+    this.attackCooldown = this.attackCooldownOverride || CONFIG.ATTACK_COOLDOWN;
     this.justAttacked = true; // Mark that attack just happened this frame
   }
 
