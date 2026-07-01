@@ -42,6 +42,9 @@ export class PlayState extends BaseState {
     this.levelCompleteDelay = 1500;
     this.inputBlocked = false;
     this.enemiesDefeated = 0;
+
+    // Parallax scrolling
+    this.parallaxOffset = 0;
     this.enemiesNeededForLevel = 50;
     this.healthPacksSkipped = 0; // Track health packs picked up at full health
   }
