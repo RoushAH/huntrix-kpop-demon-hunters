@@ -168,6 +168,7 @@ export class AssetLoader {
       { key: 'demon_icon_mira', path: 'assets/sprites/ui/demon_icon_mira.png' },
       { key: 'demon_icon_zoey', path: 'assets/sprites/ui/demon_icon_zoey.png' },
       { key: 'stat_heart', path: 'assets/sprites/ui/stat_heart.png' },
+      { key: 'poster', path: 'assets/POSTER.png' },
     ];
   }
 

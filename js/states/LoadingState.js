@@ -7,10 +7,20 @@ export class LoadingState extends BaseState {
     super(game);
     this.progress = 0;
     this.assetLoader = new AssetLoader();
+    this.posterLoaded = false;
+    this.poster = null;
   }
 
   enter() {
     console.log('LoadingState: Starting asset loading...');
+
+    // Load poster first for loading screen display
+    const posterImg = new Image();
+    posterImg.onload = () => {
+      this.poster = posterImg;
+      this.posterLoaded = true;
+    };
+    posterImg.src = 'assets/POSTER.png';
 
     const assets = AssetLoader.getAllAssets();
 
@@ -45,26 +55,37 @@ export class LoadingState extends BaseState {
     ctx.fillStyle = '#1a0033';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    // Title
-    ctx.fillStyle = '#ff1493';
-    ctx.font = 'bold 48px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('HUNTRIX', centerX, centerY - 80);
+    // Draw poster if loaded
+    if (this.posterLoaded && this.poster) {
+      const posterWidth = 600;
+      const posterHeight = (this.poster.height / this.poster.width) * posterWidth;
+      const posterX = centerX - posterWidth / 2;
+      const posterY = centerY - posterHeight / 2 - 30;
 
-    ctx.fillStyle = '#9966ff';
-    ctx.font = 'bold 20px monospace';
-    ctx.fillText('K-POP DEMON HUNTERS', centerX, centerY - 40);
+      ctx.drawImage(this.poster, posterX, posterY, posterWidth, posterHeight);
+    } else {
+      // Fallback text while poster loads
+      ctx.fillStyle = '#ff1493';
+      ctx.font = 'bold 48px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('HUNTRIX', centerX, centerY - 80);
+
+      ctx.fillStyle = '#9966ff';
+      ctx.font = 'bold 20px monospace';
+      ctx.fillText('K-POP DEMON HUNTERS', centerX, centerY - 40);
+    }
+
+    // Progress bar at bottom
+    const barWidth = 400;
+    const barHeight = 30;
+    const barX = centerX - barWidth / 2;
+    const barY = ctx.canvas.height - 80;
 
     // Loading text
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
-    ctx.fillText('LOADING...', centerX, centerY + 20);
-
-    // Progress bar
-    const barWidth = 400;
-    const barHeight = 30;
-    const barX = centerX - barWidth / 2;
-    const barY = centerY + 50;
+    ctx.textAlign = 'center';
+    ctx.fillText('LOADING...', centerX, barY - 20);
 
     // Background
     ctx.fillStyle = '#333333';

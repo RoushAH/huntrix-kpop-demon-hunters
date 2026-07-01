@@ -42,11 +42,34 @@ export class TitleState extends BaseState {
     const centerX = ctx.canvas.width / 2;
     const centerY = ctx.canvas.height / 2;
 
+    // Draw poster as background (slightly dimmed)
+    const poster = this.game.images['poster'];
+    if (poster && poster.complete) {
+      ctx.globalAlpha = 0.4;
+      const posterWidth = ctx.canvas.width;
+      const posterHeight = (poster.height / poster.width) * posterWidth;
+      const posterY = (ctx.canvas.height - posterHeight) / 2;
+      ctx.drawImage(poster, 0, posterY, posterWidth, posterHeight);
+      ctx.globalAlpha = 1.0;
+
+      // Dark overlay for text readability
+      ctx.fillStyle = 'rgba(26, 0, 51, 0.6)';
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    } else {
+      // Fallback solid background
+      ctx.fillStyle = '#1a0033';
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+
+    // Title with glow effect
+    ctx.shadowColor = '#ff1493';
+    ctx.shadowBlur = 20;
     ctx.fillStyle = '#ff1493';
     ctx.font = 'bold 64px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('HUNTRIX', centerX, centerY - 80);
+    ctx.shadowBlur = 0;
 
     ctx.fillStyle = '#9966ff';
     ctx.font = 'bold 24px monospace';
