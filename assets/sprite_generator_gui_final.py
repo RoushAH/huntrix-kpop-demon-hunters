@@ -219,7 +219,7 @@ class FrameCountDialog:
         self.result = None
         dialog = tk.Toplevel(parent)
         dialog.title("Frame Count Mismatch")
-        dialog.geometry("400x200")
+        dialog.geometry("450x250")
         dialog.transient(parent)
         dialog.grab_set()
 

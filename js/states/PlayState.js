@@ -1,6 +1,7 @@
 import { BaseState } from './BaseState.js';
 import { CharacterSelectState } from './CharacterSelectState.js';
 import { GameOverState } from './GameOverState.js';
+import { InitialsEntryState } from './InitialsEntryState.js';
 import { Player } from '../entities/Player.js';
 import { EnemySpawner } from '../entities/EnemySpawner.js';
 import { Projectile } from '../entities/Projectile.js';
@@ -111,15 +112,34 @@ export class PlayState extends BaseState {
 
     if (this.player.health <= 0 && !this.gameOver) {
       this.gameOver = true;
-      // Immediately transition to game over state
-      const gameOverState = new GameOverState(
-        this.game,
-        this.scoreManager.currentScore,
-        this.characterData,
-        this.difficulty,
-        this.mode
-      );
-      this.game.changeState(gameOverState);
+
+      // Check if this is a high score
+      const key = `${this.mode}_${this.difficulty}`;
+      const topScore = this.scoreManager.getTopScore(this.mode, this.difficulty);
+      const isHighScore = this.scoreManager.currentScore > topScore ||
+                          this.scoreManager.getHighScores(key).length < 10;
+
+      if (isHighScore) {
+        // Go to initials entry first
+        const initialsState = new InitialsEntryState(
+          this.game,
+          this.scoreManager.currentScore,
+          this.characterData,
+          this.difficulty,
+          this.mode
+        );
+        this.game.changeState(initialsState);
+      } else {
+        // Not a high score, go straight to game over
+        const gameOverState = new GameOverState(
+          this.game,
+          this.scoreManager.currentScore,
+          this.characterData,
+          this.difficulty,
+          this.mode
+        );
+        this.game.changeState(gameOverState);
+      }
       return;
     }
 

@@ -3,24 +3,26 @@ import { CharacterSelectState } from './CharacterSelectState.js';
 import { ScoreManager } from '../systems/ScoreManager.js';
 
 export class GameOverState extends BaseState {
-  constructor(game, score, character, difficulty, mode = 'story') {
+  constructor(game, score, character, difficulty, mode = 'story', initials = null) {
     super(game);
     this.score = score;
     this.character = character;
     this.difficulty = difficulty;
     this.mode = mode;
+    this.initials = initials;
     this.scoreManager = new ScoreManager();
     this.inputBlocked = true;
     this.inputBlockTimer = 1000; // Block input for 1 second
     this.blinkTimer = 0;
     this.showContinue = false;
 
-    // Save high score
+    // Save high score with initials
     this.scoreResult = this.scoreManager.saveHighScore(
       mode,
       difficulty,
       character.name,
-      score
+      score,
+      initials
     );
 
     this.highScores = this.scoreManager.getHighScores(`${mode}_${difficulty}`);
@@ -111,11 +113,12 @@ export class GameOverState extends BaseState {
       }
 
       const rank = `${index + 1}.`.padEnd(3, ' ');
-      const name = entry.character.substring(0, 8).padEnd(8, ' ');
+      const initials = entry.initials ? entry.initials : '---';
+      const name = entry.character.substring(0, 4).padEnd(4, ' ');
       const score = this.scoreManager.formatScore(entry.score);
 
       ctx.textAlign = 'left';
-      ctx.fillText(`${rank} ${name} ${score}`, centerX - 150, y);
+      ctx.fillText(`${rank} ${initials} ${name} ${score}`, centerX - 150, y);
     });
 
     // Continue prompt

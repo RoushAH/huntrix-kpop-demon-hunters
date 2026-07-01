@@ -44,13 +44,14 @@ export class ScoreManager {
   }
 
   // High score management
-  saveHighScore(mode, difficulty, character, score) {
+  saveHighScore(mode, difficulty, character, score, initials = null) {
     const key = `${mode}_${difficulty}`; // e.g., "story_easy", "endless_hard"
     const highScores = this.getHighScores(key);
 
     const newEntry = {
       score: score,
       character: character,
+      initials: initials,
       date: new Date().toISOString(),
       timestamp: Date.now()
     };
