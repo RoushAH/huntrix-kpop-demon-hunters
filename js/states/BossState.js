@@ -2,6 +2,7 @@ import { BaseState } from './BaseState.js';
 import { GameOverState } from './GameOverState.js';
 import { InitialsEntryState } from './InitialsEntryState.js';
 import { CharacterSelectState } from './CharacterSelectState.js';
+import { PauseState } from './PauseState.js';
 import { Player } from '../entities/Player.js';
 import { SajaBoy } from '../entities/SajaBoy.js';
 import { FinalBoss } from '../entities/FinalBoss.js';
@@ -29,6 +30,11 @@ export class BossState extends BaseState {
     this.phaseTransitioning = false;
     this.phaseTransitionTimer = 0;
     this.phaseTransitionDuration = 2000;
+    this.gwimaSlideIn = false;
+    this.gwimaSlideTimer = 0;
+    this.gwimaSlideStartX = 800; // Start off-screen
+    this.heroesBeingPushed = false;
+    this.heroPushTargets = {};
 
     // Entities
     this.player = null;
@@ -44,6 +50,7 @@ export class BossState extends BaseState {
     this.victory = false;
     this.victoryTimer = 0;
     this.victoryDelay = 3000;
+    this.victoryInputBlocked = true; // Block input initially to prevent instant advance
 
     // Turn-based for easy mode
     this.turnBasedMode = difficulty === 'easy';
@@ -137,7 +144,9 @@ export class BossState extends BaseState {
 
   initFinalBoss() {
     this.finalBoss = new FinalBoss(this.difficulty);
-    console.log('BossState: Created Gwi-Ma with', this.finalBoss.health, 'HP');
+    // Start Gwi-Ma off-screen to the right
+    this.finalBoss.position.x = 800;
+    console.log('BossState: Created Gwi-Ma with', this.finalBoss.health, 'HP at x=800 (off-screen)');
   }
 
   update(dt) {
@@ -167,28 +176,7 @@ export class BossState extends BaseState {
 
     if (this.victory) {
       this.victoryTimer += dt;
-      if (this.victoryTimer >= this.victoryDelay) {
-        // Victory! Show game over with high score
-        if (this.scoreManager.isNewHighScore(this.difficulty, 'story')) {
-          const initialsState = new InitialsEntryState(
-            this.game,
-            this.scoreManager.currentScore,
-            this.characterData,
-            this.difficulty,
-            'story'
-          );
-          this.game.changeState(initialsState);
-        } else {
-          const gameOverState = new GameOverState(
-            this.game,
-            this.scoreManager.currentScore,
-            this.characterData,
-            this.difficulty,
-            'story'
-          );
-          this.game.changeState(gameOverState);
-        }
-      }
+      // Don't auto-advance, wait for user to press Enter
       return;
     }
 
@@ -198,6 +186,46 @@ export class BossState extends BaseState {
         this.phaseTransitioning = false;
         this.phase = 2;
         this.initFinalBoss();
+
+        // Start Gwi-Ma slide-in
+        this.gwimaSlideIn = true;
+        this.gwimaSlideTimer = 0;
+        this.heroesBeingPushed = true;
+
+        // Set push targets for all heroes (80% to the left from current position)
+        const allHeroes = [this.player, ...this.wingwomenManager.getActiveCompanions()];
+        allHeroes.forEach(hero => {
+          const pushDistance = hero.position.x * 0.8;
+          this.heroPushTargets[hero] = hero.position.x - pushDistance;
+        });
+      }
+      return;
+    }
+
+    // Handle Gwi-Ma slide-in animation
+    if (this.gwimaSlideIn) {
+      this.gwimaSlideTimer += dt;
+      const slideDuration = 1500; // 1.5 seconds to slide in
+
+      if (this.gwimaSlideTimer >= slideDuration) {
+        this.gwimaSlideIn = false;
+        this.heroesBeingPushed = false;
+      } else {
+        // Slide Gwi-Ma in from right
+        const progress = this.gwimaSlideTimer / slideDuration;
+        const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+        this.finalBoss.position.x = this.gwimaSlideStartX - (this.gwimaSlideStartX - 608) * easeProgress;
+
+        // Push heroes back
+        const allHeroes = [this.player, ...this.wingwomenManager.getActiveCompanions()];
+        allHeroes.forEach(hero => {
+          const targetX = this.heroPushTargets[hero];
+          if (hero.position.x > targetX) {
+            hero.position.x -= (hero.position.x - targetX) * 0.1; // Smooth slide
+          }
+          hero.velocity.x = 0;
+          hero.velocity.y = 0;
+        });
       }
       return;
     }
@@ -269,19 +297,24 @@ export class BossState extends BaseState {
         this.phaseTransitioning = true;
         this.phaseTransitionTimer = 0;
 
+        // Clear health pills for phase 2
+        this.healthPills = [];
+        console.log('BossState: Cleared health pills for phase 2');
+
         // Wingwomen stay active - no change needed
       }
     }
 
     // Phase 2: Gwi-Ma
-    if (this.phase === 2 && this.finalBoss && this.finalBoss.active) {
-      this.finalBoss.update(dt);
-
-      // Check if Gwi-Ma defeated
-      if (!this.finalBoss.active) {
+    if (this.phase === 2 && this.finalBoss) {
+      if (this.finalBoss.active) {
+        this.finalBoss.update(dt);
+      } else if (!this.victory) {
+        // Gwi-Ma just died!
         console.log('BossState: Gwi-Ma defeated! VICTORY!');
         this.victory = true;
         this.victoryTimer = 0;
+        this.victoryInputBlocked = true; // Block input initially
         this.scoreManager.addPoints(10000); // Huge victory bonus
       }
     }
@@ -515,7 +548,53 @@ export class BossState extends BaseState {
   }
 
   handleInput(inputState, dt) {
-    if (this.player && !this.gameOver && !this.victory && !this.phaseTransitioning) {
+    // Handle pause (only during active gameplay)
+    if (inputState.pause && !this.gameOver && !this.victory && !this.phaseTransitioning) {
+      this.game.audioManager.playUISound();
+      const pauseState = new PauseState(this.game, this);
+      this.game.changeState(pauseState);
+      return;
+    }
+
+    // Victory screen - wait for Enter to continue
+    if (this.victory) {
+      // Unblock input after key is released
+      if (!inputState.confirm && !inputState.attack) {
+        this.victoryInputBlocked = false;
+      }
+
+      if (inputState.confirm && !this.victoryInputBlocked) {
+        console.log('BossState: Enter pressed, transitioning to high scores');
+        // Check if current score would make top 10
+        const key = `story_${this.difficulty}`;
+        const highScores = this.scoreManager.getHighScores(key);
+        const isNewHighScore = highScores.length < 10 || this.scoreManager.currentScore > highScores[highScores.length - 1].score;
+
+        // Transition to high scores
+        if (isNewHighScore) {
+          const initialsState = new InitialsEntryState(
+            this.game,
+            this.scoreManager.currentScore,
+            this.characterData,
+            this.difficulty,
+            'story'
+          );
+          this.game.changeState(initialsState);
+        } else {
+          const gameOverState = new GameOverState(
+            this.game,
+            this.scoreManager.currentScore,
+            this.characterData,
+            this.difficulty,
+            'story'
+          );
+          this.game.changeState(gameOverState);
+        }
+      }
+      return;
+    }
+
+    if (this.player && !this.gameOver && !this.phaseTransitioning) {
       if (this.player.freezeTimer <= 0) {
         this.player.handleInput(inputState, dt);
       }
@@ -615,12 +694,12 @@ export class BossState extends BaseState {
       ctx.font = '20px monospace';
       ctx.fillText(`FINAL SCORE: ${this.scoreManager.currentScore}`, ctx.canvas.width / 2, ctx.canvas.height / 2 + 70);
 
-      // Animate
-      const pulse = Math.sin(this.victoryTimer * 0.005) * 0.2 + 0.8;
+      // Animate continue prompt
+      const pulse = Math.sin(this.victoryTimer * 0.005) * 0.3 + 0.7;
       ctx.globalAlpha = pulse;
-      ctx.fillStyle = '#ffff00';
-      ctx.font = '16px monospace';
-      ctx.fillText('Processing results...', ctx.canvas.width / 2, ctx.canvas.height / 2 + 110);
+      ctx.fillStyle = '#00ff00';
+      ctx.font = 'bold 18px monospace';
+      ctx.fillText('PRESS ENTER TO CONTINUE', ctx.canvas.width / 2, ctx.canvas.height / 2 + 110);
       ctx.globalAlpha = 1.0;
     }
   }

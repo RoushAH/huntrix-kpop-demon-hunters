@@ -3,6 +3,7 @@ import { CharacterSelectState } from './CharacterSelectState.js';
 import { BossCharacterSelectState } from './BossCharacterSelectState.js';
 import { GameOverState } from './GameOverState.js';
 import { InitialsEntryState } from './InitialsEntryState.js';
+import { PauseState } from './PauseState.js';
 import { Player } from '../entities/Player.js';
 import { EnemySpawner } from '../entities/EnemySpawner.js';
 import { Projectile } from '../entities/Projectile.js';
@@ -317,13 +318,13 @@ export class PlayState extends BaseState {
       ctx.fillStyle = '#00ff00';
       ctx.font = '14px monospace';
       ctx.textAlign = 'left';
-      ctx.fillText('WINGWOMEN ACTIVE!', 20, 90);
+      ctx.fillText('WINGWOMEN ACTIVE!', 20, 180);
     } else {
       const secondsLeft = Math.ceil(this.wingwomenManager.timer / 1000);
       ctx.fillStyle = '#ffff00';
       ctx.font = '14px monospace';
       ctx.textAlign = 'left';
-      ctx.fillText(`Backup in ${secondsLeft}s`, 20, 90);
+      ctx.fillText(`Backup in ${secondsLeft}s`, 20, 180);
     }
 
     if (this.levelComplete) {
@@ -383,6 +384,14 @@ export class PlayState extends BaseState {
   }
 
   handleInput(inputState) {
+    // Handle pause
+    if (inputState.pause && !this.gameOver && !this.levelComplete) {
+      this.game.audioManager.playUISound();
+      const pauseState = new PauseState(this.game, this);
+      this.game.changeState(pauseState);
+      return;
+    }
+
     if (!inputState.attack) {
       this.inputBlocked = false;
     }

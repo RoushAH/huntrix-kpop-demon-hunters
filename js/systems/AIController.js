@@ -133,30 +133,50 @@ export class AIController {
   }
 
   handleRangedBehavior(targetEnemy, distance) {
-    const optimalDistance = 200; // Mira wants to stay ~200px away (closer to action)
+    if (!targetEnemy || !targetEnemy.active) {
+      // No valid target, don't attack
+      this.entity.velocity.x = 0;
+      this.entity.velocity.y = 0;
+      return;
+    }
 
-    // Much more aggressive - attack as soon as in range
-    if (distance < this.attackRange && this.entity.attackCooldown <= 0 && !this.entity.isAttacking) {
-      // In range, attack
+    // For horizontal projectiles: Y = aim, X = range
+    const dx = targetEnemy.position.x - this.entity.position.x;
+    const dy = targetEnemy.position.y - this.entity.position.y;
+    const optimalXDistance = 200; // Ideal X range for shooting
+    const aimTolerance = 20; // Y alignment tolerance (within 20px = good aim)
+
+    const isAimed = Math.abs(dy) < aimTolerance; // Are we Y-aligned?
+    const inXRange = Math.abs(dx) >= 50 && Math.abs(dx) <= 500; // Shoot at up to 500px range
+
+    // Attack when aimed and in range
+    if (isAimed && inXRange && this.entity.attackCooldown <= 0 && !this.entity.isAttacking) {
       this.state = 'attack';
       this.entity.velocity.x = 0;
       this.entity.velocity.y = 0;
       this.entity.attack();
-    } else if (distance < optimalDistance * 0.5) {
-      // Too close, back away (< 100px)
-      this.state = 'retreat';
-      const awayDirection = this.entity.position.clone().subtract(targetEnemy.position).normalize();
-      this.entity.velocity = awayDirection.multiply(this.entity.baseSpeed * 0.8);
-    } else if (distance > optimalDistance) {
-      // Too far, move closer more aggressively
-      this.state = 'position';
-      const direction = targetEnemy.position.clone().subtract(this.entity.position).normalize();
-      this.entity.velocity = direction.multiply(this.entity.baseSpeed * 0.7); // Was 0.5, now 0.7
     } else {
-      // In sweet spot (100-200px), hold position and keep attacking
-      this.state = 'hold';
+      // Not ready to shoot - reposition
+      this.state = 'position';
       this.entity.velocity.x = 0;
       this.entity.velocity.y = 0;
+
+      // PRIORITY 1: Match Y position for aim (aggressive)
+      if (Math.abs(dy) > aimTolerance) {
+        const yDirection = dy > 0 ? 1 : -1;
+        this.entity.velocity.y = yDirection * this.entity.baseSpeed * 1.2; // Fast vertical adjustment
+      }
+
+      // PRIORITY 2: Adjust X distance (only if aim is good or very close)
+      if (Math.abs(dy) < aimTolerance * 2) { // Within 40px Y, start adjusting X
+        if (dx > optimalXDistance) {
+          // Too far, move right toward target
+          this.entity.velocity.x = this.entity.baseSpeed * 0.6;
+        } else if (dx < 50) {
+          // Too close, back away left
+          this.entity.velocity.x = -this.entity.baseSpeed * 0.5;
+        }
+      }
     }
   }
 
@@ -185,8 +205,8 @@ export class AIController {
     this.state = 'position';
 
     if (!this.assignedZone) {
-      // Ranged character, position more aggressively forward
-      const targetX = 200; // Was 150, now 200
+      // Ranged character, position aggressively forward (well within firing range)
+      const targetX = 350; // Much closer to action, still safe distance from spawn
       const targetY = 225;
       this.moveTowards(targetX, targetY);
     } else {
@@ -214,7 +234,22 @@ export class AIController {
 
   findZoneTarget(enemies) {
     if (!this.assignedZone) {
-      // Ranged, target nearest enemy
+      // Ranged character - prioritize helping teammates
+      // First, check what the player is attacking
+      if (this.player && this.player.isAttacking) {
+        const playerTarget = this.findEnemyNearPlayer(enemies);
+        if (playerTarget && playerTarget.active) {
+          return playerTarget;
+        }
+      }
+
+      // Second, check what other companions are attacking
+      const companionTarget = this.findCompanionTarget(enemies);
+      if (companionTarget && companionTarget.active) {
+        return companionTarget;
+      }
+
+      // Finally, just pick nearest active enemy
       return this.findNearestEnemy(enemies);
     }
 
@@ -267,6 +302,37 @@ export class AIController {
 
   get currentTarget() {
     return this.target;
+  }
+
+  findEnemyNearPlayer(enemies) {
+    // Find enemy closest to player (likely what player is attacking)
+    if (!this.player) return null;
+
+    let nearest = null;
+    let minDistance = Infinity;
+
+    enemies.forEach(enemy => {
+      if (!enemy.active) return;
+      const distance = this.player.position.distanceTo(enemy.position);
+      if (distance < 150 && distance < minDistance) { // Only consider if within 150px of player
+        minDistance = distance;
+        nearest = enemy;
+      }
+    });
+
+    return nearest;
+  }
+
+  findCompanionTarget(enemies) {
+    // Find what other companions are targeting
+    for (const companion of this.companions) {
+      if (companion === this.entity || !companion.aiController) continue;
+      const target = companion.aiController.currentTarget;
+      if (target && target.active) {
+        return target;
+      }
+    }
+    return null;
   }
 
   findNearestEnemy(enemies) {

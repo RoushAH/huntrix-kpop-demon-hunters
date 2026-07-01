@@ -1,5 +1,5 @@
 import { BaseState } from './BaseState.js';
-import { CharacterSelectState } from './CharacterSelectState.js';
+import { TutorialState } from './TutorialState.js';
 
 export class TitleState extends BaseState {
   constructor(game) {
@@ -67,8 +67,8 @@ export class TitleState extends BaseState {
       this.game.audioManager.playMusic('title');
       this.game.audioManager.playSelectSound();
 
-      const characterSelectState = new CharacterSelectState(this.game);
-      this.game.changeState(characterSelectState);
+      const tutorialState = new TutorialState(this.game);
+      this.game.changeState(tutorialState);
     }
   }
 }

@@ -2,8 +2,8 @@ import { Entity } from './Entity.js';
 
 export class SajaBoy extends Entity {
   constructor(x, y, boyType, difficultyConfig, difficulty = 'easy') {
-    // Saja Boys are larger than normal enemies
-    super(x, y, 64, 96);
+    // Saja Boys are 1.5× larger than normal enemies (48×72 vs 32×48)
+    super(x, y, 48, 72);
 
     this.boyType = boyType; // freeze, tank, dodger, summoner, berserker
     this.difficultyConfig = difficultyConfig;
