@@ -41,11 +41,15 @@ export class Enemy extends Entity {
 
     this.healthPillDropChance = difficulty === 'easy' ? 0.2 : 0.1;
 
-    // Enable sprite rendering
-    if (type === 'fast' || type === 'tank') {
-      this.spriteKey = `demon_${type}`;
+    // Enable sprite rendering with correct frame counts
+    if (type === 'fast') {
+      this.spriteKey = `demon_fast`;
       this.useSprites = true;
-      this.frameCount = { walk: 4, attack: 3, death: 4 };
+      this.frameCount = { walk: 6, attack: 3, death: 3 };
+    } else if (type === 'tank') {
+      this.spriteKey = `demon_tank`;
+      this.useSprites = true;
+      this.frameCount = { walk: 4, attack: 4, death: 5 };
     }
   }
 
