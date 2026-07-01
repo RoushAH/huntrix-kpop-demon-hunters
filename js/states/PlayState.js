@@ -216,7 +216,7 @@ export class PlayState extends BaseState {
             enemy.takeDamage(damage);
             this.game.audioManager.playHitSound();
 
-            if (!enemy.active) {
+            if (!enemy.active || enemy.isDying) {
               this.onEnemyDefeated(enemy);
             }
           }
@@ -233,7 +233,7 @@ export class PlayState extends BaseState {
           projectile.onHit();
           this.game.audioManager.playHitSound();
 
-          if (!enemy.active) {
+          if (!enemy.active || enemy.isDying) {
             this.onEnemyDefeated(enemy);
           }
         }
