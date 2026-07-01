@@ -26,6 +26,10 @@ export class Player extends Entity {
 
     // Boss fight freeze mechanic
     this.freezeTimer = 0;
+
+    // Enable sprite rendering
+    this.spriteKey = characterData.type; // 'rumi', 'mira', 'zoey'
+    this.useSprites = true;
   }
 
   update(dt) {
@@ -59,7 +63,14 @@ export class Player extends Entity {
 
     if (this.velocity.length() > 0) {
       this.velocity.normalize().multiply(this.baseSpeed);
+      this.setAnimation('walk');
+    } else if (!this.isAttacking) {
+      this.setAnimation('idle');
     }
+
+    // Flip sprite based on movement direction
+    if (inputState.left) this.flipX = true;
+    if (inputState.right) this.flipX = false;
 
     if (inputState.attack && this.attackCooldown <= 0 && !this.isAttacking) {
       this.attack();
@@ -72,6 +83,7 @@ export class Player extends Entity {
     // Use override cooldown if set (for AI companions), otherwise use default
     this.attackCooldown = this.attackCooldownOverride || CONFIG.ATTACK_COOLDOWN;
     this.justAttacked = true; // Mark that attack just happened this frame
+    this.setAnimation('attack');
   }
 
   getAttackBox() {
@@ -96,7 +108,7 @@ export class Player extends Entity {
     return actualHealed === 0;
   }
 
-  render(ctx) {
+  render(ctx, images) {
     if (!this.active) return;
 
     let color = this.color;
@@ -104,7 +116,7 @@ export class Player extends Entity {
       color = '#ffffff';
     }
 
-    super.render(ctx, color);
+    super.render(ctx, color, images);
 
     if (this.isAttacking && this.characterType !== 'mira') {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';

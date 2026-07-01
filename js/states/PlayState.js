@@ -285,22 +285,24 @@ export class PlayState extends BaseState {
     ctx.lineWidth = 2;
     ctx.strokeRect(0, 90, ctx.canvas.width, ctx.canvas.height - 100);
 
-    this.player.render(ctx);
+    const images = this.game.images;
+
+    this.player.render(ctx, images);
 
     this.wingwomenManager.getActiveCompanions().forEach(companion => {
-      companion.render(ctx);
+      companion.render(ctx, images);
     });
 
     this.enemies.forEach(enemy => {
-      enemy.render(ctx);
+      enemy.render(ctx, images);
     });
 
     this.projectiles.forEach(projectile => {
-      projectile.render(ctx);
+      projectile.render(ctx, images);
     });
 
     this.healthPills.forEach(pill => {
-      pill.render(ctx);
+      pill.render(ctx, images);
     });
 
     Renderer.renderUI(ctx, this.player, this.scoreManager.currentScore, this.scoreManager.currentCombo);

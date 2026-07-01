@@ -12,6 +12,13 @@ export class Entity {
     this.currentAnimation = 'idle';
     this.animationFrame = 0;
     this.animationTimer = 0;
+    this.animationSpeed = 100; // ms per frame
+
+    // Sprite rendering
+    this.spriteKey = null; // Base key for sprites (e.g., 'rumi')
+    this.useSprites = false; // Flag to enable sprite rendering
+    this.frameCount = { idle: 4, walk: 6, attack: 5, hit: 3 }; // Default frame counts
+    this.flipX = false; // Flip sprite horizontally
   }
 
   update(dt) {
@@ -21,6 +28,26 @@ export class Entity {
     this.position.y += this.velocity.y * dt / 1000;
 
     this.clampPosition();
+    this.updateAnimation(dt);
+  }
+
+  updateAnimation(dt) {
+    this.animationTimer += dt;
+
+    const currentFrameCount = this.frameCount[this.currentAnimation] || 1;
+
+    if (this.animationTimer >= this.animationSpeed) {
+      this.animationFrame = (this.animationFrame + 1) % currentFrameCount;
+      this.animationTimer = 0;
+    }
+  }
+
+  setAnimation(animName) {
+    if (this.currentAnimation !== animName) {
+      this.currentAnimation = animName;
+      this.animationFrame = 0;
+      this.animationTimer = 0;
+    }
   }
 
   clampPosition() {
@@ -46,9 +73,22 @@ export class Entity {
     };
   }
 
-  render(ctx, color) {
+  render(ctx, color, images = null) {
     if (!this.active) return;
 
+    // Try to render sprite if available
+    if (this.useSprites && images && this.spriteKey) {
+      const spriteKey = `${this.spriteKey}_${this.currentAnimation}`;
+      const sprite = images[spriteKey];
+
+      if (sprite && sprite.complete) {
+        this.renderSprite(ctx, sprite);
+        this.renderHealthBar(ctx);
+        return;
+      }
+    }
+
+    // Fallback to colored rectangle
     ctx.fillStyle = color;
     ctx.fillRect(
       Math.floor(this.position.x),
@@ -58,6 +98,33 @@ export class Entity {
     );
 
     this.renderHealthBar(ctx);
+  }
+
+  renderSprite(ctx, sprite) {
+    const frameWidth = sprite.width / (this.frameCount[this.currentAnimation] || 1);
+    const frameHeight = sprite.height;
+    const frameX = this.animationFrame * frameWidth;
+
+    ctx.save();
+
+    // Flip horizontally if needed
+    if (this.flipX) {
+      ctx.translate(this.position.x + this.size.x, this.position.y);
+      ctx.scale(-1, 1);
+      ctx.drawImage(
+        sprite,
+        frameX, 0, frameWidth, frameHeight,
+        0, 0, this.size.x, this.size.y
+      );
+    } else {
+      ctx.drawImage(
+        sprite,
+        frameX, 0, frameWidth, frameHeight,
+        this.position.x, this.position.y, this.size.x, this.size.y
+      );
+    }
+
+    ctx.restore();
   }
 
   renderHealthBar(ctx) {

@@ -1,6 +1,6 @@
 import { Game } from './core/Game.js';
 import { InputManager } from './core/InputManager.js';
-import { TitleState } from './states/TitleState.js';
+import { LoadingState } from './states/LoadingState.js';
 import { CONFIG } from './config.js';
 
 function resizeCanvas() {
@@ -32,8 +32,9 @@ window.addEventListener('load', () => {
 
   game.inputManager = inputManager;
 
-  const titleState = new TitleState(game);
-  game.changeState(titleState);
+  // Start with loading state to preload assets
+  const loadingState = new LoadingState(game);
+  game.changeState(loadingState);
 
   game.start();
 
