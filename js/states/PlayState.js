@@ -77,6 +77,9 @@ export class PlayState extends BaseState {
   }
 
   update(dt) {
+    // Update parallax scrolling
+    this.parallaxOffset += dt * 0.02;
+
     if (this.gameOver) {
       return;
     }
