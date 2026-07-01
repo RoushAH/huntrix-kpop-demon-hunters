@@ -68,7 +68,6 @@ export class Player extends Entity {
     this.attackTimer = 0;
     this.attackCooldown = CONFIG.ATTACK_COOLDOWN;
     this.justAttacked = true; // Mark that attack just happened this frame
-    console.log(this.name, 'attacked! Type:', this.characterType, 'justAttacked:', this.justAttacked);
   }
 
   getAttackBox() {

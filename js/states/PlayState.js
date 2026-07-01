@@ -137,14 +137,12 @@ export class PlayState extends BaseState {
 
       // Create projectile if character just attacked and is ranged (Mira)
       if (player.justAttacked && player.characterType === 'mira') {
-        console.log('Creating projectile for', player.name, 'at position', player.position.x, player.position.y);
         const projectile = new Projectile(
           player.position.x + player.size.x,
           player.position.y + player.size.y / 2 - 8,
           player.attackDamage * this.difficultyConfig.playerDamageMultiplier
         );
         this.projectiles.push(projectile);
-        console.log('Projectile created! Total projectiles:', this.projectiles.length);
       }
     });
 

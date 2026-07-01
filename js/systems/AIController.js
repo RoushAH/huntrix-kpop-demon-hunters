@@ -82,7 +82,6 @@ export class AIController {
       this.state = 'attack';
       this.entity.velocity.x = 0;
       this.entity.velocity.y = 0;
-      console.log('AI Mira attacking! Distance:', Math.round(distance), 'Range:', this.attackRange);
       this.entity.attack();
     } else if (distance < optimalDistance * 0.5) {
       // Too close, back away (< 100px)
