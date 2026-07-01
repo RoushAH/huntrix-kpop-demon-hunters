@@ -51,7 +51,7 @@ export class Renderer {
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 18px monospace';
     ctx.fillText(`HEALTH`, 20, 75);
-    this.renderHealthHearts(ctx, player, 20, 90, images);
+    this.renderHealthHearts(ctx, player, 20, 90);
 
     // Combo meter
     if (combo > 0) {
@@ -72,70 +72,34 @@ export class Renderer {
     const maxHearts = Math.ceil(player.maxHealth / 20); // 1 heart = 20 HP
     const fullHearts = Math.floor(player.health / 20);
     const partialHeart = (player.health % 20) / 20;
+    const heartSize = 16;
+    const heartSpacing = 20;
 
-    // Get heart sprites
-    const heartFull = images && images['heart_full'];
-    const heartEmpty = images && images['heart_empty'];
-    const useSprites = heartFull && heartFull.complete && heartEmpty && heartEmpty.complete;
+    for (let i = 0; i < maxHearts; i++) {
+      const heartX = x + (i * heartSpacing);
 
-    if (useSprites) {
-      // Render with sprites
-      const heartWidth = 20;
-      const heartHeight = 20;
-      const heartSpacing = 24;
+      if (i < fullHearts) {
+        // Full heart
+        ctx.fillStyle = '#ff0000';
+        ctx.font = `${heartSize}px monospace`;
+        ctx.textAlign = 'left';
+        ctx.fillText('♥', heartX, y);
+      } else if (i === fullHearts && partialHeart > 0) {
+        // Partial heart (draw both and clip)
+        ctx.fillStyle = '#333333';
+        ctx.fillText('♥', heartX, y);
 
-      for (let i = 0; i < maxHearts; i++) {
-        const heartX = x + (i * heartSpacing);
-
-        if (i < fullHearts) {
-          // Full heart
-          ctx.drawImage(heartFull, heartX, y - heartHeight, heartWidth, heartHeight);
-        } else if (i === fullHearts && partialHeart > 0) {
-          // Partial heart - draw empty first, then clip full heart
-          ctx.drawImage(heartEmpty, heartX, y - heartHeight, heartWidth, heartHeight);
-
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(heartX, y - heartHeight, heartWidth * partialHeart, heartHeight);
-          ctx.clip();
-          ctx.drawImage(heartFull, heartX, y - heartHeight, heartWidth, heartHeight);
-          ctx.restore();
-        } else {
-          // Empty heart
-          ctx.drawImage(heartEmpty, heartX, y - heartHeight, heartWidth, heartHeight);
-        }
-      }
-    } else {
-      // Fallback to text hearts
-      const heartSize = 16;
-      const heartSpacing = 20;
-
-      for (let i = 0; i < maxHearts; i++) {
-        const heartX = x + (i * heartSpacing);
-
-        if (i < fullHearts) {
-          // Full heart
-          ctx.fillStyle = '#ff0000';
-          ctx.font = `${heartSize}px monospace`;
-          ctx.textAlign = 'left';
-          ctx.fillText('♥', heartX, y);
-        } else if (i === fullHearts && partialHeart > 0) {
-          // Partial heart (draw both and clip)
-          ctx.fillStyle = '#333333';
-          ctx.fillText('♥', heartX, y);
-
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(heartX, y - heartSize, heartSize * partialHeart, heartSize);
-          ctx.clip();
-          ctx.fillStyle = '#ff0000';
-          ctx.fillText('♥', heartX, y);
-          ctx.restore();
-        } else {
-          // Empty heart
-          ctx.fillStyle = '#333333';
-          ctx.fillText('♥', heartX, y);
-        }
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(heartX, y - heartSize, heartSize * partialHeart, heartSize);
+        ctx.clip();
+        ctx.fillStyle = '#ff0000';
+        ctx.fillText('♥', heartX, y);
+        ctx.restore();
+      } else {
+        // Empty heart
+        ctx.fillStyle = '#333333';
+        ctx.fillText('♥', heartX, y);
       }
     }
   }
