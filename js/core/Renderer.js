@@ -2,6 +2,10 @@ export class Renderer {
   static renderBackground(ctx, images, level = 1, parallaxOffset = 0) {
     const levelKey = level > 3 ? 'boss' : `level${level}`;
 
+    // Clear canvas first with solid background color
+    ctx.fillStyle = '#1a0033';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
     // Parallax speeds: layer 1 (far) slowest, layer 3 (near) fastest
     const parallaxSpeeds = [0.2, 0.5, 1.0];
 
@@ -9,6 +13,8 @@ export class Renderer {
     for (let i = 1; i <= 2; i++) {
       const bgKey = `bg_${levelKey}_layer${i}`;
       const bg = images[bgKey];
+
+      console.log(`Rendering ${bgKey}:`, bg ? `loaded (${bg.width}x${bg.height})` : 'not loaded');
 
       if (bg && bg.complete) {
         // Scale background to be 1.5x canvas width for scrolling room
