@@ -65,11 +65,7 @@ export class Renderer {
       this.renderComboMeter(ctx, combo, 20, 140);
     }
 
-    // Character name with background box
-    const nameWidth = ctx.measureText(player.name.toUpperCase()).width;
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    ctx.fillRect(780 - nameWidth - 10, 10, nameWidth + 20, 30);
-
+    // Character name (background box is drawn in PlayState to cover name + level/enemies)
     ctx.textAlign = 'right';
     ctx.fillStyle = player.color;
     ctx.font = 'bold 20px monospace';
