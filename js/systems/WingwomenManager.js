@@ -29,12 +29,16 @@ export class WingwomenManager {
         companion.attackDamage = companion.attackDamage * 0.4;
         companion.attackCooldown = 600;
 
-        companion.aiController = new AIController(companion);
         console.log('Created companion:', companion.name,
           'speed:', companion.baseSpeed,
           'damage:', companion.attackDamage);
         return companion;
       });
+
+    // Initialize AI controllers after all companions are created
+    companions.forEach(companion => {
+      companion.aiController = new AIController(companion, this.playerCharacter, companions);
+    });
 
     console.log('Total companions created:', companions.length);
     return companions;

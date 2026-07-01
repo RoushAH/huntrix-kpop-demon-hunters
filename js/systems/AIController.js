@@ -1,41 +1,173 @@
 export class AIController {
-  constructor(entity) {
+  constructor(entity, player, companions) {
     this.entity = entity;
+    this.player = player;
+    this.companions = companions;
     this.state = 'follow';
     this.target = null;
     this.attackRange = 50;
     this.followDistance = 80;
     this.engageDistance = 600;
+    this.assignedZone = null; // 'top', 'bottom', or null for ranged
   }
 
   update(dt, enemies) {
-    const nearestEnemy = this.findNearestEnemy(enemies);
+    // Determine zone assignment based on character type and player position
+    this.updateZoneAssignment();
 
-    if (nearestEnemy) {
-      const distance = this.entity.position.distanceTo(nearestEnemy.position);
+    // Find the best enemy to target based on zone strategy
+    const targetEnemy = this.findZoneTarget(enemies);
 
-      if (distance < this.attackRange) {
-        this.state = 'attack';
-        this.entity.velocity.x = 0;
-        this.entity.velocity.y = 0;
+    if (targetEnemy) {
+      const distance = this.entity.position.distanceTo(targetEnemy.position);
 
-        if (this.entity.attackCooldown <= 0 && !this.entity.isAttacking) {
-          this.entity.attack();
-        }
-      } else if (distance < this.engageDistance) {
-        this.state = 'engage';
-        const direction = nearestEnemy.position.clone().subtract(this.entity.position).normalize();
-        this.entity.velocity = direction.multiply(this.entity.baseSpeed);
+      // Ranged character (Mira) keeps distance
+      if (this.entity.attackRange > 100) {
+        this.handleRangedBehavior(targetEnemy, distance);
       } else {
-        this.state = 'idle';
-        this.entity.velocity.x = 0;
-        this.entity.velocity.y = 0;
+        this.handleMeleeBehavior(targetEnemy, distance);
       }
     } else {
-      this.state = 'idle';
+      // No enemies, move to zone position
+      this.moveToZonePosition();
+    }
+  }
+
+  updateZoneAssignment() {
+    // Mira (ranged) doesn't need a zone
+    if (this.entity.attackRange > 100) {
+      this.assignedZone = null;
+      return;
+    }
+
+    // For melee companions, determine who gets top and who gets bottom
+    const meleeCompanions = this.companions.filter(c => c.attackRange <= 100);
+    const companionIndex = meleeCompanions.indexOf(this.entity);
+
+    if (companionIndex === -1) return;
+
+    // Check if player is melee
+    const playerIsMelee = this.player.attackRange <= 100;
+
+    if (playerIsMelee) {
+      // Player is melee, so avoid their zone
+      const playerInTopHalf = this.player.position.y < 225;
+
+      if (meleeCompanions.length === 1) {
+        // Only one melee companion, take opposite zone from player
+        this.assignedZone = playerInTopHalf ? 'bottom' : 'top';
+      } else {
+        // Two melee companions, first takes opposite of player, second takes player's zone
+        if (companionIndex === 0) {
+          this.assignedZone = playerInTopHalf ? 'bottom' : 'top';
+        } else {
+          this.assignedZone = playerInTopHalf ? 'top' : 'bottom';
+        }
+      }
+    } else {
+      // Player is ranged (Mira), companions split top/bottom
+      this.assignedZone = companionIndex === 0 ? 'top' : 'bottom';
+    }
+  }
+
+  handleRangedBehavior(targetEnemy, distance) {
+    const optimalDistance = 250; // Mira wants to stay ~250px away
+
+    if (distance < this.attackRange && this.entity.attackCooldown <= 0 && !this.entity.isAttacking) {
+      // In range, attack
+      this.state = 'attack';
+      this.entity.velocity.x = 0;
+      this.entity.velocity.y = 0;
+      this.entity.attack();
+    } else if (distance < optimalDistance * 0.6) {
+      // Too close, back away
+      this.state = 'retreat';
+      const awayDirection = this.entity.position.clone().subtract(targetEnemy.position).normalize();
+      this.entity.velocity = awayDirection.multiply(this.entity.baseSpeed * 0.8);
+    } else if (distance > this.attackRange) {
+      // Too far, move closer but slowly
+      this.state = 'position';
+      const direction = targetEnemy.position.clone().subtract(this.entity.position).normalize();
+      this.entity.velocity = direction.multiply(this.entity.baseSpeed * 0.5);
+    } else {
+      // Just right, hold position
+      this.state = 'hold';
       this.entity.velocity.x = 0;
       this.entity.velocity.y = 0;
     }
+  }
+
+  handleMeleeBehavior(targetEnemy, distance) {
+    if (distance < this.attackRange) {
+      // In melee range, attack
+      this.state = 'attack';
+      this.entity.velocity.x = 0;
+      this.entity.velocity.y = 0;
+
+      if (this.entity.attackCooldown <= 0 && !this.entity.isAttacking) {
+        this.entity.attack();
+      }
+    } else if (distance < this.engageDistance) {
+      // Chase enemy
+      this.state = 'engage';
+      const direction = targetEnemy.position.clone().subtract(this.entity.position).normalize();
+      this.entity.velocity = direction.multiply(this.entity.baseSpeed);
+    } else {
+      this.moveToZonePosition();
+    }
+  }
+
+  moveToZonePosition() {
+    // Move to center of assigned zone
+    this.state = 'position';
+
+    if (!this.assignedZone) {
+      // Ranged character, stay back left
+      const targetX = 150;
+      const targetY = 225;
+      this.moveTowards(targetX, targetY);
+    } else {
+      const targetX = 300;
+      const targetY = this.assignedZone === 'top' ? 150 : 300;
+      this.moveTowards(targetX, targetY);
+    }
+  }
+
+  moveTowards(targetX, targetY) {
+    const dx = targetX - this.entity.position.x;
+    const dy = targetY - this.entity.position.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 20) {
+      this.entity.velocity.x = 0;
+      this.entity.velocity.y = 0;
+    } else {
+      const dirX = dx / distance;
+      const dirY = dy / distance;
+      this.entity.velocity.x = dirX * this.entity.baseSpeed * 0.5;
+      this.entity.velocity.y = dirY * this.entity.baseSpeed * 0.5;
+    }
+  }
+
+  findZoneTarget(enemies) {
+    if (!this.assignedZone) {
+      // Ranged, target nearest enemy
+      return this.findNearestEnemy(enemies);
+    }
+
+    // Melee, prioritize enemies in your zone
+    const zoneEnemies = enemies.filter(enemy => {
+      if (!enemy.active) return false;
+      const inTopHalf = enemy.position.y < 225;
+      return this.assignedZone === 'top' ? inTopHalf : !inTopHalf;
+    });
+
+    if (zoneEnemies.length > 0) {
+      return this.findNearestEnemy(zoneEnemies);
+    }
+
+    // No enemies in zone, help with nearest enemy anywhere
+    return this.findNearestEnemy(enemies);
   }
 
   findNearestEnemy(enemies) {

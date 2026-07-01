@@ -32,9 +32,10 @@ export class EnemySpawner {
         console.log('Spawned', this.enemiesSpawned, 'enemies. Current interval:', interval, 'ms (rate:', this.spawnRate, 'x)');
       }
 
+      const spawnPos = this.getRandomSpawnPosition();
       const enemy = new Enemy(
-        CONFIG.ENEMY_SPAWN_X,
-        Math.random() * 250 + 100,
+        spawnPos.x,
+        spawnPos.y,
         this.getEnemyType(),
         this.difficultyConfig,
         this.difficulty
@@ -44,6 +45,34 @@ export class EnemySpawner {
     }
 
     return null;
+  }
+
+  getRandomSpawnPosition() {
+    const random = Math.random();
+
+    // 70% chance: spawn from right edge (main side)
+    // 15% chance: spawn from top-right corner area
+    // 15% chance: spawn from bottom-right corner area
+
+    if (random < 0.7) {
+      // Right edge, anywhere from y=100 to y=350
+      return {
+        x: CONFIG.ENEMY_SPAWN_X,
+        y: Math.random() * 250 + 100
+      };
+    } else if (random < 0.85) {
+      // Top-right corner area (rightmost 10% of top edge)
+      return {
+        x: Math.random() * 80 + 720, // x from 720 to 800
+        y: Math.random() * 60 + 40   // y from 40 to 100
+      };
+    } else {
+      // Bottom-right corner area (rightmost 10% of bottom edge)
+      return {
+        x: Math.random() * 80 + 720, // x from 720 to 800
+        y: Math.random() * 60 + 350  // y from 350 to 410
+      };
+    }
   }
 
   getEnemyType() {
