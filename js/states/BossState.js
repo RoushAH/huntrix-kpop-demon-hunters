@@ -656,8 +656,6 @@ export class BossState extends BaseState {
     }
 
     // Render entities
-    const images = this.game.images;
-
     if (this.player) {
       this.player.render(ctx, images);
 
