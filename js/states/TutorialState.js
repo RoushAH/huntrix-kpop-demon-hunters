@@ -63,14 +63,14 @@ export class TutorialState extends BaseState {
   renderKeyboardInstructions(ctx, centerX, centerY) {
     const leftCol = centerX - 200;
     const rightCol = centerX + 200;
-    const topRow = centerY - 60;
-    const bottomRow = centerY + 60;
+    const topRow = centerY - 40;
+    const bottomRow = centerY + 80;
 
     // Movement section
     ctx.fillStyle = '#9966ff';
     ctx.font = 'bold 24px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('MOVE', leftCol, topRow - 40);
+    ctx.fillText('MOVE', leftCol, topRow - 60);
 
     // Arrow keys diagram
     this.drawArrowKeys(ctx, leftCol, topRow);
@@ -82,7 +82,7 @@ export class TutorialState extends BaseState {
     // Attack section
     ctx.fillStyle = '#9966ff';
     ctx.font = 'bold 24px monospace';
-    ctx.fillText('ATTACK', rightCol, topRow - 40);
+    ctx.fillText('ATTACK', rightCol, topRow - 60);
 
     // Space key
     this.drawSpaceKey(ctx, rightCol, topRow);
@@ -122,7 +122,7 @@ export class TutorialState extends BaseState {
     // Attack section
     ctx.fillStyle = '#9966ff';
     ctx.font = 'bold 24px monospace';
-    ctx.fillText('ATTACK', rightCol, topRow - 40);
+    ctx.fillText('ATTACK', rightCol, topRow - 60);
 
     // Tap gesture
     this.drawTapGesture(ctx, rightCol, topRow, this.animFrame);
