@@ -13,6 +13,7 @@ export class TitleState extends BaseState {
     this.blinkTimer = 0;
     this.showText = true;
     this.inputDetected = false;
+    this.inputBlocked = false;
   }
 
   update(dt) {
@@ -53,7 +54,11 @@ export class TitleState extends BaseState {
   }
 
   handleInput(inputState) {
-    if (inputState.attack && !this.inputDetected) {
+    if (!inputState.attack) {
+      this.inputBlocked = false;
+    }
+
+    if (inputState.attack && !this.inputDetected && !this.inputBlocked) {
       this.inputDetected = true;
 
       const characterSelectState = new CharacterSelectState(this.game);

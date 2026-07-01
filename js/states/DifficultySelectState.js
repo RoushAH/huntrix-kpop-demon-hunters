@@ -15,6 +15,7 @@ export class DifficultySelectState extends BaseState {
     this.selectedIndex = 0;
     this.confirmTimer = 0;
     this.lastInputTime = 0;
+    this.inputBlocked = true;
   }
 
   update(dt) {
@@ -93,7 +94,11 @@ export class DifficultySelectState extends BaseState {
   }
 
   handleInput(inputState) {
-    if (this.lastInputTime > 0) return;
+    if (!inputState.attack) {
+      this.inputBlocked = false;
+    }
+
+    if (this.lastInputTime > 0 || this.inputBlocked) return;
 
     if (inputState.up && this.selectedIndex > 0) {
       this.selectedIndex--;
